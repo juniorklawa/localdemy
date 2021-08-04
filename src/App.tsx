@@ -9,7 +9,7 @@ export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/course">
+        <Route path="/course/:id">
           <CoursePage />
         </Route>
         <Route path="/">

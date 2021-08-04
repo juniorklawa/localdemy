@@ -1,59 +1,72 @@
 import React, { useEffect, useState } from 'react';
-
-interface ICourse {
-  title: string;
-  lessons: IVideo[];
-}
-
-interface IVideo {
-  title: string;
-  path: string;
-  id: string;
-}
+import { useHistory, useParams } from 'react-router-dom';
+import asyncLocalStorage from '../../services/asyncLocalStorage';
+import { ICourse } from '../HomePage';
 
 const CoursePage = () => {
   const [currentCourse, setCurrentCourse] = useState<ICourse>({} as ICourse);
-
-  const [videoList, setVideoList] = useState<IVideo[]>([
-    {
-      id: '1',
-      path: './firestore_data_modeling_course/1.mp4',
-      title: 'Introduction',
-    },
-  ]);
+  const { id } = useParams();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const folderName = 'firestore_data_modeling_course';
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setVideoList([]);
-    setCurrentCourse({
-      title: 'Firestore Data Modeling',
-      lessons: [],
-    } as ICourse);
-    const path = require('path');
-    const fs = require('fs');
-    // joining path of directory
-    const directoryPath = path.join(__dirname, folderName);
-    // passsing directoryPath and callback function
-    fs.readdir(directoryPath, function (err, files) {
-      // handling error
-      if (err) {
-        return console.log(`Unable to scan directory: ${err}`);
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const loadedCourse = await asyncLocalStorage.getItem(id);
+
+        const parsedCourse: ICourse = JSON.parse(loadedCourse as string);
+        setCurrentCourse({
+          id: parsedCourse.id,
+          courseTitle: parsedCourse.courseTitle,
+          lessons: parsedCourse.lessons,
+        } as ICourse);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
-      files.forEach((file: string) => {
-        setVideoList((prevState) => [
-          ...prevState,
-          { title: file, path: `./${folderName}/${file}`, id: file },
-        ]);
-      });
-    });
-  }, []);
+    }
+
+    fetchData();
+  }, [id]);
 
   const handleGoToNext = () => {
     setCurrentIndex((prevState) => prevState + 1);
   };
+
+  const markLessonAsCompleted = async (lessonIndex: number) => {
+    const updatedCurrentCourseLessons = currentCourse.lessons.map(
+      (lesson, index) => {
+        if (index === lessonIndex) {
+          return {
+            ...lesson,
+            isCompleted: true,
+          };
+        }
+
+        return lesson;
+      }
+    );
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      lessons: updatedCurrentCourseLessons,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+    await asyncLocalStorage.setItem(
+      updatedCurrentCourse.id,
+      JSON.stringify(updatedCurrentCourse)
+    );
+  };
+
+  const history = useHistory();
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <div
@@ -66,6 +79,10 @@ const CoursePage = () => {
         padding: 0,
       }}
     >
+      <button type="button" onClick={() => history.push('/')}>
+        Voltar
+      </button>
+
       <div
         style={{
           height: 50,
@@ -78,7 +95,7 @@ const CoursePage = () => {
         }}
       >
         <h2 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
-          {currentCourse?.title}
+          {currentCourse?.courseTitle}
         </h2>
       </div>
 
@@ -90,11 +107,15 @@ const CoursePage = () => {
       >
         <div style={{ width: '75%' }}>
           <video
-            key={String(videoList[currentIndex]?.id)}
+            key={currentCourse.lessons[currentIndex].path}
             width="100%"
+            onEnded={() => markLessonAsCompleted(currentIndex)}
             controls
           >
-            <source src={videoList[currentIndex]?.path} type="video/mp4" />
+            <source
+              src={currentCourse.lessons[currentIndex].path}
+              type="video/mp4"
+            />
           </video>
 
           <div
@@ -109,7 +130,9 @@ const CoursePage = () => {
           >
             <div style={{ padding: 16 }}>
               <h2 style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
-                {`${currentIndex} ${videoList[currentIndex]?.title}`}
+                {`${
+                  currentCourse?.lessons[currentIndex].name.split('.mp4')[0]
+                }`}
               </h2>
             </div>
             <button
@@ -134,8 +157,9 @@ const CoursePage = () => {
             overflow: 'auto',
           }}
         >
-          {videoList.map((item, i) => (
-            <div
+          {currentCourse?.lessons?.map((item, i) => (
+            <button
+              type="button"
               onClick={() => setCurrentIndex(i)}
               style={{
                 margin: 8,
@@ -143,15 +167,35 @@ const CoursePage = () => {
                 backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
                 display: 'flex',
                 width: '80%',
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 alignItems: 'center',
               }}
               key={String(i)}
             >
+              {currentCourse.lessons[i].isCompleted ? (
+                <div
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    backgroundColor: 'green',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    backgroundColor: '#bdbdbd',
+                  }}
+                />
+              )}
+
               <p style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
-                {item.title}
+                {item.name}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>

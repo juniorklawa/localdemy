@@ -1,10 +1,31 @@
-
-
 * {
-  margin: 0 ;
-  padding: 0 ;
+  margin: 0;
+  padding: 0;
 }
 
+button {
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  overflow: visible;
+
+  background: transparent;
+
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+}
 
 @font-face {
   font-family: 'OpenSans-Bold';
@@ -13,49 +34,54 @@
 
 @font-face {
   font-family: 'OpenSans-BoldItalic';
-  src: local('OpenSans-BoldItalic'), url(./fonts/OpenSans-BoldItalic.ttf) format('truetype');
+  src: local('OpenSans-BoldItalic'),
+    url(./fonts/OpenSans-BoldItalic.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-ExtraBold';
-  src: local('OpenSans-ExtraBold'), url(./fonts/OpenSans-ExtraBold.ttf) format('truetype');
+  src: local('OpenSans-ExtraBold'),
+    url(./fonts/OpenSans-ExtraBold.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-ExtraBoldItalic';
-  src: local('OpenSans-ExtraBoldItalic'), url(./fonts/OpenSans-ExtraBoldItalic.ttf) format('truetype');
+  src: local('OpenSans-ExtraBoldItalic'),
+    url(./fonts/OpenSans-ExtraBoldItalic.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-Italic';
-  src: local('OpenSans-Italic'), url(./fonts/OpenSans-Italic.ttf) format('truetype');
+  src: local('OpenSans-Italic'),
+    url(./fonts/OpenSans-Italic.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-Light';
-  src: local('OpenSans-Light'), url(./fonts/OpenSans-Light.ttf) format('truetype');
+  src: local('OpenSans-Light'),
+    url(./fonts/OpenSans-Light.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-LightItalic';
-  src: local('OpenSans-LightItalic'), url(./fonts/OpenSans-LightItalic.ttf) format('truetype');
+  src: local('OpenSans-LightItalic'),
+    url(./fonts/OpenSans-LightItalic.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-Regular';
-  src: local('OpenSans-Regular'), url(./fonts/OpenSans-Regular.ttf) format('truetype');
+  src: local('OpenSans-Regular'),
+    url(./fonts/OpenSans-Regular.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-SemiBold';
-  src: local('OpenSans-SemiBold'), url(./fonts/OpenSans-SemiBold.ttf) format('truetype');
+  src: local('OpenSans-SemiBold'),
+    url(./fonts/OpenSans-SemiBold.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'OpenSans-SemiBoldItalic';
-  src: local('OpenSans-SemiBoldItalic'), url(./fonts/OpenSans-SemiBoldItalic.ttf) format('truetype');
+  src: local('OpenSans-SemiBoldItalic'),
+    url(./fonts/OpenSans-SemiBoldItalic.ttf) format('truetype');
 }
-
-
-
-
