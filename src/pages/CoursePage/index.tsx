@@ -3,9 +3,13 @@ import { useHistory, useParams } from 'react-router-dom';
 import asyncLocalStorage from '../../services/asyncLocalStorage';
 import { ICourse } from '../HomePage';
 
+interface IRouteParams {
+  id: string;
+}
+
 const CoursePage = () => {
   const [currentCourse, setCurrentCourse] = useState<ICourse>({} as ICourse);
-  const { id } = useParams();
+  const { id } = useParams<IRouteParams>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +68,11 @@ const CoursePage = () => {
 
   const history = useHistory();
 
+  const handleDeleteCourse = () => {
+    localStorage.removeItem(id);
+    history.push('/');
+  };
+
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
@@ -79,24 +88,31 @@ const CoursePage = () => {
         padding: 0,
       }}
     >
-      <button type="button" onClick={() => history.push('/')}>
-        Voltar
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <button type="button" onClick={() => history.push('/')}>
+          Voltar
+        </button>
 
-      <div
-        style={{
-          height: 50,
-          width: '100%',
-          backgroundColor: '#263238',
-          padding: 8,
-          alignItems: 'center',
-          flex: 1,
-          justifyContent: 'center',
-        }}
-      >
-        <h2 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
-          {currentCourse?.courseTitle}
-        </h2>
+        <div
+          style={{
+            height: 50,
+            width: '100%',
+            backgroundColor: '#263238',
+            padding: 8,
+            alignItems: 'center',
+            flexDirection: 'row',
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
+          <h2 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
+            {currentCourse?.courseTitle}
+          </h2>
+        </div>
+
+        <button type="button" onClick={() => handleDeleteCourse()}>
+          Deletar
+        </button>
       </div>
 
       <div

@@ -2,11 +2,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import naturalSorting from '../../services/naturalSorting';
+import {
+  Container,
+  CourseContainer,
+  CourseTitle,
+  InfoContainer,
+  ProgressLabel,
+  Thumbnail,
+} from './styles';
 
 export interface ICourse {
   courseTitle: string;
   lessons: IVideo[];
   id: string;
+  isCompleted?: boolean;
+  courseThumbnail: string;
 }
 
 export interface IVideo {
@@ -39,13 +49,28 @@ const HomePage: React.FC = () => {
         });
 
         const path = require('path');
-        // Return the directries:
         const folderName = path
           .dirname(formattedFiles[0].path)
           .split(path.sep)
           .pop();
 
+        const placeholderThumbNail = path.dirname('../../not_available.png');
+        console.log('placeholderThumbNail', placeholderThumbNail);
+
         const courseId = uuidv4();
+
+        const validImageTypes = [
+          'image/gif',
+          'image/jpeg',
+          'image/png',
+          'image/jpg',
+        ];
+
+        const thumbnailFile = formattedFiles.find(
+          (file) =>
+            file.name.includes('thumbnail') &&
+            validImageTypes.includes(file.type)
+        );
 
         const updatedLoadedCourse: ICourse = {
           courseTitle: folderName,
@@ -53,6 +78,7 @@ const HomePage: React.FC = () => {
             return naturalSorting(a.name, b.name);
           }),
           id: courseId,
+          courseThumbnail: thumbnailFile?.path as string,
         };
 
         localStorage.setItem(courseId, JSON.stringify(updatedLoadedCourse));
@@ -105,36 +131,41 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#12181B',
-        margin: 0,
-        flex: 1,
-        padding: 0,
-      }}
-    >
-      <button type="button">Ir para courses</button>
+    <Container>
+      <div style={{ padding: 16 }}>
+        <h1 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
+          My courses
+        </h1>
+      </div>
 
       <SelectCourseFolder />
-      {loadedCourseList.map((course) => (
-        <button
-          type="button"
-          key={course.id}
-          onClick={() => history.push(`/course/${course.id}`)}
-          style={{
-            backgroundColor: '#bdbdbd',
-            width: 250,
-            borderRadius: 8,
-            padding: 32,
-            margin: 16,
-          }}
-        >
-          <p> {course.courseTitle}</p>
-        </button>
-      ))}
-    </div>
+      {loadedCourseList.map((course) => {
+        const completedLength = course.lessons.filter(
+          (lesson) => lesson.isCompleted
+        ).length;
+
+        const percentage = Math.floor(
+          (completedLength / course.lessons.length) * 100
+        );
+
+        return (
+          <CourseContainer
+            type="button"
+            key={course.id}
+            onClick={() => history.push(`/course/${course.id}`)}
+          >
+            <Thumbnail
+              src={course.courseThumbnail || `./not_available.png`}
+              alt="thumbnail"
+            />
+            <InfoContainer>
+              <CourseTitle> {course.courseTitle}</CourseTitle>
+              <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
+            </InfoContainer>
+          </CourseContainer>
+        );
+      })}
+    </Container>
   );
 };
 
