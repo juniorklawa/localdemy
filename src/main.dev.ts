@@ -70,6 +70,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     icon: getAssetPath('icon.png'),
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,

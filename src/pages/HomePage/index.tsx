@@ -95,7 +95,15 @@ const HomePage: React.FC = () => {
     };
 
     return (
-      <div style={{ backgroundColor: 'blue', width: 100, color: '#fff' }}>
+      <button
+        style={{
+          backgroundColor: '#00C853',
+          width: 100,
+          color: '#fff',
+          borderRadius: 50,
+          fontFamily: 'OpenSans-Bold',
+        }}
+      >
         <input
           style={{ display: 'none' }}
           // accept=".zip,.rar"
@@ -108,7 +116,7 @@ const HomePage: React.FC = () => {
         <div className="button" onClick={onButtonClick}>
           Upload
         </div>
-      </div>
+      </button>
     );
   };
 
@@ -132,39 +140,48 @@ const HomePage: React.FC = () => {
 
   return (
     <Container>
-      <div style={{ padding: 16 }}>
+      <div
+        style={{
+          padding: 16,
+          flexDirection: 'row',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <h1 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
           My courses
         </h1>
+        <SelectCourseFolder />
       </div>
 
-      <SelectCourseFolder />
-      {loadedCourseList.map((course) => {
-        const completedLength = course.lessons.filter(
-          (lesson) => lesson.isCompleted
-        ).length;
+      <div style={{ flexDirection: 'row', display: 'flex' }}>
+        {loadedCourseList.map((course) => {
+          const completedLength = course.lessons.filter(
+            (lesson) => lesson.isCompleted
+          ).length;
 
-        const percentage = Math.floor(
-          (completedLength / course.lessons.length) * 100
-        );
+          const percentage = Math.floor(
+            (completedLength / course.lessons.length) * 100
+          );
 
-        return (
-          <CourseContainer
-            type="button"
-            key={course.id}
-            onClick={() => history.push(`/course/${course.id}`)}
-          >
-            <Thumbnail
-              src={course.courseThumbnail || `./not_available.png`}
-              alt="thumbnail"
-            />
-            <InfoContainer>
-              <CourseTitle> {course.courseTitle}</CourseTitle>
-              <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
-            </InfoContainer>
-          </CourseContainer>
-        );
-      })}
+          return (
+            <CourseContainer
+              type="button"
+              key={course.id}
+              onClick={() => history.push(`/course/${course.id}`)}
+            >
+              <Thumbnail
+                src={course.courseThumbnail || `./not_available.png`}
+                alt="thumbnail"
+              />
+              <InfoContainer>
+                <CourseTitle> {course.courseTitle}</CourseTitle>
+                <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
+              </InfoContainer>
+            </CourseContainer>
+          );
+        })}
+      </div>
     </Container>
   );
 };
