@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
 import naturalSorting from '../../services/naturalSorting';
 import {
   Container,
@@ -10,6 +11,14 @@ import {
   ProgressLabel,
   Thumbnail,
 } from './styles';
+
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    // extends React's HTMLAttributes
+    directory?: string; // remember to make these attributes optional....
+    webkitdirectory?: string;
+  }
+}
 
 export interface ICourse {
   courseTitle: string;
@@ -30,35 +39,29 @@ const HomePage: React.FC = () => {
   const [loadedCourseList, setLoadedCoursesList] = useState<ICourse[]>([]);
 
   const SelectCourseFolder = () => {
-    const inputFile = useRef(null);
+    const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
 
-    const handleFileUpload = (e) => {
+    const handleFileUpload = (e: any) => {
       const { files } = e.target;
-
-      console.log('FILES', files);
 
       if (files && files.length) {
         const formattedFiles: IVideo[] = [];
 
         files.forEach((file: IVideo) => {
+          const fileName = file.path.substring(file.path.lastIndexOf('/') + 1);
           const formattedFile = {
-            name: file?.path?.match(/([^\\/]*)\/*$/)[1],
+            name: fileName,
             path: file.path,
             type: file.type,
           };
 
-          console.log(formattedFile);
           formattedFiles.push(formattedFile);
         });
 
-        const path = require('path');
         const folderName = path
           .dirname(formattedFiles[0].path)
           .split(path.sep)
           .pop();
-
-        const placeholderThumbNail = path.dirname('../../not_available.png');
-        console.log('placeholderThumbNail', placeholderThumbNail);
 
         const courseId = uuidv4();
 
@@ -76,7 +79,7 @@ const HomePage: React.FC = () => {
         );
 
         const updatedLoadedCourse: ICourse = {
-          courseTitle: folderName,
+          courseTitle: folderName as string,
           lessons: formattedFiles.sort((a, b) => {
             return naturalSorting(a.name, b.name);
           }),
@@ -116,9 +119,9 @@ const HomePage: React.FC = () => {
           directory=""
           webkitdirectory=""
         />
-        <div className="button" onClick={onButtonClick}>
+        <button type="button" className="button" onClick={onButtonClick}>
           Add
-        </div>
+        </button>
       </button>
     );
   };

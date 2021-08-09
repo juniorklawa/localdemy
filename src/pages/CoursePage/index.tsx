@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import RLDD, { RLDDItem } from 'react-list-drag-and-drop/lib/RLDD';
 import asyncLocalStorage from '../../services/asyncLocalStorage';
-import { ICourse } from '../HomePage';
+import { ICourse, IVideo } from '../HomePage';
 
 interface IRouteParams {
   id: string;
@@ -21,10 +22,18 @@ const CoursePage = () => {
         const loadedCourse = await asyncLocalStorage.getItem(id);
 
         const parsedCourse: ICourse = JSON.parse(loadedCourse as string);
+
+        const updatedLessons: IVideo[] = parsedCourse?.lessons.map(
+          (lesson, i) => ({
+            ...lesson,
+            id: i,
+          })
+        );
+
         setCurrentCourse({
           id: parsedCourse.id,
           courseTitle: parsedCourse.courseTitle,
-          lessons: parsedCourse.lessons,
+          lessons: updatedLessons,
         } as ICourse);
 
         console.log(parsedCourse);
@@ -37,10 +46,6 @@ const CoursePage = () => {
 
     fetchData();
   }, [id]);
-
-  const handleGoToNext = () => {
-    setCurrentIndex((prevState) => prevState + 1);
-  };
 
   const markLessonAsCompleted = async (lessonIndex: number) => {
     const updatedCurrentCourseLessons = currentCourse.lessons.map(
@@ -68,12 +73,25 @@ const CoursePage = () => {
     );
   };
 
+  const handleGoToNext = () => {
+    markLessonAsCompleted(currentIndex);
+    setCurrentIndex((prevState) => prevState + 1);
+  };
+
   const history = useHistory();
 
   const handleDeleteCourse = () => {
     localStorage.removeItem(id);
     history.push('/');
   };
+
+  function handleRLDDChange(reorderedItems: Array<any>) {
+    // console.log('Example.handleRLDDChange');
+    setCurrentCourse((prevState) => ({
+      ...prevState,
+      lessons: reorderedItems,
+    }));
+  }
 
   if (isLoading) {
     return <h1>Loading...</h1>;
@@ -124,6 +142,14 @@ const CoursePage = () => {
           </h2>
         </div>
 
+        <button
+          style={{ marginRight: 320 }}
+          type="button"
+          onClick={() => handleDeleteCourse()}
+        >
+          Edit
+        </button>
+
         <button type="button" onClick={() => handleDeleteCourse()}>
           Deletar
         </button>
@@ -135,18 +161,29 @@ const CoursePage = () => {
           flexDirection: 'row',
         }}
       >
-        <div style={{ width: '75%' }}>
-          <video
-            key={currentCourse.lessons[currentIndex].path}
-            width="100%"
-            onEnded={() => markLessonAsCompleted(currentIndex)}
-            controls
-          >
-            <source
-              src={currentCourse.lessons[currentIndex].path}
-              type="video/mp4"
-            />
-          </video>
+        <div style={{ width: '75%', height: '100%' }}>
+          {currentCourse.lessons[currentIndex].type === 'application/pdf' ? (
+            <div>
+              <iframe
+                src={currentCourse.lessons[currentIndex].path}
+                frameBorder="0"
+                height={740}
+                width="100%"
+              />
+            </div>
+          ) : (
+            <video
+              key={currentCourse.lessons[currentIndex].path}
+              width="100%"
+              onEnded={() => markLessonAsCompleted(currentIndex)}
+              controls
+            >
+              <source
+                src={currentCourse.lessons[currentIndex].path}
+                type="video/mp4"
+              />
+            </video>
+          )}
 
           <div
             style={{
@@ -187,7 +224,54 @@ const CoursePage = () => {
             overflow: 'auto',
           }}
         >
-          {currentCourse?.lessons?.map((item, i) => (
+          <RLDD
+            items={currentCourse?.lessons}
+            itemRenderer={(item, i) => {
+              return (
+                <button
+                  type="button"
+                  onClick={() => setCurrentIndex(i)}
+                  style={{
+                    margin: 8,
+                    padding: 16,
+                    backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
+                    display: 'flex',
+                    width: '80%',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}
+                  key={String(i)}
+                >
+                  {currentCourse.lessons[i].isCompleted ? (
+                    <div
+                      style={{
+                        height: 30,
+                        width: 30,
+                        borderRadius: 15,
+                        backgroundColor: 'green',
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        height: 30,
+                        width: 30,
+                        borderRadius: 15,
+                        backgroundColor: '#bdbdbd',
+                      }}
+                    />
+                  )}
+
+                  <p style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
+                    {item.name}
+                  </p>
+                </button>
+              );
+            }}
+            onChange={(items) => handleRLDDChange(items)}
+          />
+
+          {/* {currentCourse?.lessons?.map((item, i) => (
             <button
               type="button"
               onClick={() => setCurrentIndex(i)}
@@ -226,7 +310,7 @@ const CoursePage = () => {
                 {item.name}
               </p>
             </button>
-          ))}
+          ))} */}
         </div>
       </div>
     </div>

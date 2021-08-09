@@ -1,0 +1,100 @@
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#212121',
+            width: '25%',
+            height: '100vh',
+            alignItems: 'center',
+            borderWidth: 3,
+            overflow: 'auto',
+          }}
+        >
+          <RLDD
+            items={currentCourse?.lessons}
+            itemRenderer={(item, i) => {
+              return (
+                <button
+                  type="button"
+                  onClick={() => setCurrentIndex(i)}
+                  style={{
+                    margin: 8,
+                    padding: 16,
+                    backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
+                    display: 'flex',
+                    width: '80%',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}
+                  key={String(i)}
+                >
+                  {currentCourse.lessons[i].isCompleted ? (
+                    <div
+                      style={{
+                        height: 30,
+                        width: 30,
+                        borderRadius: 15,
+                        backgroundColor: 'green',
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        height: 30,
+                        width: 30,
+                        borderRadius: 15,
+                        backgroundColor: '#bdbdbd',
+                      }}
+                    />
+                  )}
+
+                  <p style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
+                    {item.name}
+                  </p>
+                </button>
+              );
+            }}
+            onChange={(items) => handleRLDDChange(items)}
+          />
+
+          {/* {currentCourse?.lessons?.map((item, i) => (
+            <button
+              type="button"
+              onClick={() => setCurrentIndex(i)}
+              style={{
+                margin: 8,
+                padding: 16,
+                backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
+                display: 'flex',
+                width: '80%',
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+              }}
+              key={String(i)}
+            >
+              {currentCourse.lessons[i].isCompleted ? (
+                <div
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    backgroundColor: 'green',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    backgroundColor: '#bdbdbd',
+                  }}
+                />
+              )}
+
+              <p style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
+                {item.name}
+              </p>
+            </button>
+          ))} */}
+        </div>
