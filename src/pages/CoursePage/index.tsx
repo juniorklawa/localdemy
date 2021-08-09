@@ -26,6 +26,8 @@ const CoursePage = () => {
           courseTitle: parsedCourse.courseTitle,
           lessons: parsedCourse.lessons,
         } as ICourse);
+
+        console.log(parsedCourse);
       } catch (err) {
         console.error(err);
       } finally {
@@ -82,15 +84,27 @@ const CoursePage = () => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#12181B',
         margin: 0,
         flex: 1,
         padding: 0,
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          backgroundColor: '#263238',
+        }}
+      >
         <button type="button" onClick={() => history.push('/')}>
-          Voltar
+          <img
+            style={{
+              height: 24,
+              width: 24,
+            }}
+            src="./left-chevron.png"
+            alt="thumbnail"
+          />
         </button>
 
         <div

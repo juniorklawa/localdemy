@@ -35,16 +35,19 @@ const HomePage: React.FC = () => {
     const handleFileUpload = (e) => {
       const { files } = e.target;
 
+      console.log('FILES', files);
+
       if (files && files.length) {
         const formattedFiles: IVideo[] = [];
 
         files.forEach((file: IVideo) => {
           const formattedFile = {
-            name: file.name,
+            name: file?.path?.match(/([^\\/]*)\/*$/)[1],
             path: file.path,
             type: file.type,
           };
 
+          console.log(formattedFile);
           formattedFiles.push(formattedFile);
         });
 
@@ -96,9 +99,10 @@ const HomePage: React.FC = () => {
 
     return (
       <button
+        type="button"
         style={{
           backgroundColor: '#00C853',
-          width: 100,
+          width: 120,
           color: '#fff',
           borderRadius: 50,
           fontFamily: 'OpenSans-Bold',
@@ -106,7 +110,6 @@ const HomePage: React.FC = () => {
       >
         <input
           style={{ display: 'none' }}
-          // accept=".zip,.rar"
           ref={inputFile}
           onChange={handleFileUpload}
           type="file"
@@ -114,7 +117,7 @@ const HomePage: React.FC = () => {
           webkitdirectory=""
         />
         <div className="button" onClick={onButtonClick}>
-          Upload
+          Add
         </div>
       </button>
     );

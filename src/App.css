@@ -36,6 +36,10 @@ button {
   -webkit-appearance: none;
 }
 
+#root {
+  max-width: 960px;
+}
+
 @font-face {
   font-family: 'OpenSans-Bold';
   src: local('OpenSans-Bold'), url(./fonts/OpenSans-Bold.ttf) format('truetype');
