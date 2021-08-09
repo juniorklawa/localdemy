@@ -10,6 +10,8 @@
 body {
   background-color: #12181b;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-width: 1024px;
 }
 
 button {

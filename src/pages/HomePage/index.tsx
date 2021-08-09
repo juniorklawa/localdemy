@@ -1,15 +1,22 @@
+import path from 'path';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
 import naturalSorting from '../../services/naturalSorting';
 import {
+  AddCourseButton,
   Container,
   CourseContainer,
+  CoursesContainer,
   CourseTitle,
+  EmptyListContainer,
+  EmptyListLabel,
   InfoContainer,
   ProgressLabel,
+  Shrug,
   Thumbnail,
+  Title,
+  Toolbar,
 } from './styles';
 
 declare module 'react' {
@@ -26,6 +33,8 @@ export interface ICourse {
   id: string;
   isCompleted?: boolean;
   courseThumbnail: string;
+  lastIndex?: number;
+  autoPlayEnabled?: boolean;
 }
 
 export interface IVideo {
@@ -33,6 +42,7 @@ export interface IVideo {
   path: string;
   type: string;
   isCompleted?: boolean;
+  lastPosition?: number;
 }
 
 const HomePage: React.FC = () => {
@@ -41,6 +51,7 @@ const HomePage: React.FC = () => {
   const SelectCourseFolder = () => {
     const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileUpload = (e: any) => {
       const { files } = e.target;
 
@@ -80,9 +91,13 @@ const HomePage: React.FC = () => {
 
         const updatedLoadedCourse: ICourse = {
           courseTitle: folderName as string,
-          lessons: formattedFiles.sort((a, b) => {
-            return naturalSorting(a.name, b.name);
-          }),
+          lessons: formattedFiles
+            .sort((a, b) => {
+              return naturalSorting(a.name, b.name);
+            })
+            .filter(
+              (file) => file.type.includes('video') || file.type.includes('pdf')
+            ),
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
@@ -101,28 +116,17 @@ const HomePage: React.FC = () => {
     };
 
     return (
-      <button
-        type="button"
-        style={{
-          backgroundColor: '#00C853',
-          width: 120,
-          color: '#fff',
-          borderRadius: 50,
-          fontFamily: 'OpenSans-Bold',
-        }}
-      >
+      <AddCourseButton type="button" onClick={onButtonClick}>
         <input
           style={{ display: 'none' }}
           ref={inputFile}
-          onChange={handleFileUpload}
+          onChange={(e) => handleFileUpload(e)}
           type="file"
           directory=""
           webkitdirectory=""
         />
-        <button type="button" className="button" onClick={onButtonClick}>
-          Add
-        </button>
-      </button>
+        Add
+      </AddCourseButton>
     );
   };
 
@@ -146,48 +150,53 @@ const HomePage: React.FC = () => {
 
   return (
     <Container>
-      <div
-        style={{
-          padding: 16,
-          flexDirection: 'row',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <h1 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
-          My courses
-        </h1>
+      <Toolbar>
+        <Title>My courses</Title>
         <SelectCourseFolder />
-      </div>
+      </Toolbar>
 
-      <div style={{ flexDirection: 'row', display: 'flex' }}>
-        {loadedCourseList.map((course) => {
-          const completedLength = course.lessons.filter(
-            (lesson) => lesson.isCompleted
-          ).length;
+      {loadedCourseList.length > 0 ? (
+        <>
+          <CoursesContainer
+            style={{ flexWrap: 'wrap', display: 'flex', marginTop: 32 }}
+          >
+            {loadedCourseList.map((course) => {
+              const completedLength = course.lessons.filter(
+                (lesson) => lesson.isCompleted
+              ).length;
 
-          const percentage = Math.floor(
-            (completedLength / course.lessons.length) * 100
-          );
+              const percentage = Math.floor(
+                (completedLength / course.lessons.length) * 100
+              );
 
-          return (
-            <CourseContainer
-              type="button"
-              key={course.id}
-              onClick={() => history.push(`/course/${course.id}`)}
-            >
-              <Thumbnail
-                src={course.courseThumbnail || `./not_available.png`}
-                alt="thumbnail"
-              />
-              <InfoContainer>
-                <CourseTitle> {course.courseTitle}</CourseTitle>
-                <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
-              </InfoContainer>
-            </CourseContainer>
-          );
-        })}
-      </div>
+              return (
+                <CourseContainer
+                  type="button"
+                  key={course.id}
+                  onClick={() => history.push(`/course/${course.id}`)}
+                >
+                  <Thumbnail
+                    src={course.courseThumbnail || `./not_available.png`}
+                    alt="thumbnail"
+                  />
+                  <InfoContainer>
+                    <CourseTitle> {course.courseTitle}</CourseTitle>
+                    <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
+                  </InfoContainer>
+                </CourseContainer>
+              );
+            })}
+          </CoursesContainer>
+        </>
+      ) : (
+        <EmptyListContainer>
+          <Shrug alt="thumbnail" src="./white_shrukg.png" />
+          <EmptyListLabel>
+            Looks like you haven't added any courses yet, press the green button
+            to add the first one!
+          </EmptyListLabel>
+        </EmptyListContainer>
+      )}
     </Container>
   );
 };

@@ -6,6 +6,7 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/media-has-caption': 'off',
     'import/prefer-default-export': 'off',
+    'react/no-unescaped-entities': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
