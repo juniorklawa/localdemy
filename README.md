@@ -1,6 +1,6 @@
 ## Localdemy
 
-### 1.0 Features
+### ~1.0 General Features~
 
 - ~Finish and go to next~
 - ~PDF Viewer and Access~
@@ -8,22 +8,26 @@
 - ~Save last index~
 - ~Save video position~
 
-### 1.1 HomePage Layout
+### ~1.1 HomePage Layout~
 
 - ~HomePage Layout~
 
-### 1.2
-- Edit file and course title name
-- Filter by type (video and pdf)
-- Manual ordering files
+### 1.2 Edit Feature
+- ~Edit file and course title name~
 - Edit course thumbnail
 
-### 1.3
+### 1.3 CoursePageLayout
+- Course and Edit Layout
+### 1.4 Onboarding Features
+- Filter by type (video and pdf)
+- Manual ordering files
+### 1.5 Onboarding Layouts
+- Course Onboarding
+### 1.6 Finished Course Modal
+- Archive course
+- FTP
 
-- CoursePage Layout
-
-### 1.4
-
+### 1.7 Extra Features
 - Archive course
 - FTP
 
