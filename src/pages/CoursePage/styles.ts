@@ -19,5 +19,6 @@ export const StyledModal = styled(ReactModal)`
 export const ModalContainer = styled.div`
   background-color: '#fff';
   max-width: 700px;
+  display: flex;
   padding: 3em 2em;
 `;

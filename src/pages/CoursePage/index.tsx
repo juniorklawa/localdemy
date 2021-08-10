@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import Switch from 'react-switch';
 import asyncLocalStorage from '../../services/asyncLocalStorage';
 import { ICourse } from '../HomePage';
+import { AddCourseButton } from '../HomePage/styles';
 import { StyledModal } from './styles';
 
 interface IRouteParams {
@@ -12,6 +13,7 @@ interface IRouteParams {
 const CoursePage = () => {
   const [currentCourse, setCurrentCourse] = useState<ICourse>({} as ICourse);
   const { id } = useParams<IRouteParams>();
+  const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -171,6 +173,14 @@ const CoursePage = () => {
       currentCourse.id,
       JSON.stringify(currentCourse)
     );
+  };
+
+  const onButtonClick = () => {
+    inputFile.current.click();
+  };
+
+  const handleFileUpload = (event: any) => {
+    console.log(event.target.files[0]);
   };
 
   if (isLoading) {
@@ -380,6 +390,8 @@ const CoursePage = () => {
             borderRadius: 10,
             display: 'flex',
             flexDirection: 'column',
+            height: '100vh',
+            overflow: 'auto',
           }}
         >
           <button type="button" onClick={() => setIsModalOpen(false)}>
@@ -399,7 +411,28 @@ const CoursePage = () => {
             value={currentCourse.courseTitle}
           />
 
-          <p>Course lessons</p>
+          <p>Course thumbanil</p>
+
+          <img
+            style={{ width: '25%', marginTop: 16 }}
+            src={currentCourse.courseThumbnail}
+            alt="course thumbanil"
+          />
+
+          <button
+            style={{ alignSelf: 'flex-start' }}
+            type="button"
+            onClick={() => onButtonClick()}
+          >
+            <input
+              ref={inputFile}
+              onChange={(e) => handleFileUpload(e)}
+              type="file"
+              name="file"
+            />
+          </button>
+
+          <p style={{ marginTop: 16 }}>Course lessons</p>
 
           {currentCourse.lessons.map((lesson) => (
             <input
