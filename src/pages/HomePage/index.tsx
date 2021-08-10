@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
         files.forEach((file: IVideo) => {
           const fileName = file.path.substring(file.path.lastIndexOf('/') + 1);
           const formattedFile = {
-            name: fileName,
+            name: fileName.replace(/\.[^/.]+$/, ''),
             path: file.path,
             type: file.type,
           };

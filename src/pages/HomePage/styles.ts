@@ -33,11 +33,12 @@ export const AddCourseButton = styled.button`
   border-radius: 50px;
   font-family: OpenSans-Bold;
   height: 40px;
-  transition: background-color 200ms ease-in-out;
+  transition: background-color 200ms ease-in-out, transform 300ms ease-in-out;
 
   &:hover {
-    background-color: #43a047;
-    transition: background-color 200ms ease-in-out;
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+    transition: background-color 200ms ease-in-out, transform 300ms ease-in-out;
   }
 `;
 

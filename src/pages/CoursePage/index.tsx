@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import Switch from 'react-switch';
 import asyncLocalStorage from '../../services/asyncLocalStorage';
 import { ICourse } from '../HomePage';
+import { StyledModal } from './styles';
 
 interface IRouteParams {
   id: string;
@@ -15,6 +16,12 @@ const CoursePage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
+
+  const [modalIsOpen, setIsModalOpen] = useState(false);
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -136,6 +143,36 @@ const CoursePage = () => {
     );
   };
 
+  const handleOnInputLessonNameChange = async (e: any, lessonPath: string) => {
+    console.log(e.target.value);
+
+    const updatedCurrentCourseLessons = currentCourse.lessons.map((lesson) => {
+      if (lesson.path === lessonPath) {
+        return {
+          ...lesson,
+          name: e.target.value,
+        };
+      }
+
+      return lesson;
+    });
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      lessons: updatedCurrentCourseLessons,
+      lastIndex: currentIndex,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+  };
+
+  const saveCurrentCourse = async () => {
+    await asyncLocalStorage.setItem(
+      currentCourse.id,
+      JSON.stringify(currentCourse)
+    );
+  };
+
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
@@ -188,7 +225,7 @@ const CoursePage = () => {
         <button
           style={{ marginRight: 320 }}
           type="button"
-          onClick={() => handleDeleteCourse()}
+          onClick={() => setIsModalOpen(true)}
         >
           Edit
         </button>
@@ -328,6 +365,62 @@ const CoursePage = () => {
           ))}
         </div>
       </div>
+
+      <StyledModal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Example Modal"
+      >
+        <div
+          style={{
+            backgroundColor: '#fff',
+            width: '50%',
+            padding: 32,
+            borderRadius: 10,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <button type="button" onClick={() => setIsModalOpen(false)}>
+            close
+          </button>
+
+          <p>Course title</p>
+
+          <input
+            onChange={(e) =>
+              setCurrentCourse((prevState) => ({
+                ...prevState,
+                courseTitle: e.target.value,
+              }))
+            }
+            style={{ margin: 8 }}
+            value={currentCourse.courseTitle}
+          />
+
+          <p>Course lessons</p>
+
+          {currentCourse.lessons.map((lesson) => (
+            <input
+              onChange={(e) => handleOnInputLessonNameChange(e, lesson.path)}
+              key={lesson.path}
+              style={{ margin: 8 }}
+              value={lesson.name}
+            />
+          ))}
+
+          <button
+            type="button"
+            onClick={async () => {
+              saveCurrentCourse();
+              setIsModalOpen(false);
+            }}
+          >
+            save
+          </button>
+        </div>
+      </StyledModal>
     </div>
   );
 };
