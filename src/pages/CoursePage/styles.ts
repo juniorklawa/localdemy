@@ -38,6 +38,43 @@ export const OptionButton = styled.button`
   display: flex;
 `;
 
+export const ClassesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #212121;
+  width: 25%;
+  height: 100vh;
+  align-items: center;
+  border-width: 3px;
+  overflow: auto;
+  border: 1px solid #263238;
+`;
+
+export const VideoContainer = styled.div`
+  width: 75%;
+  height: 100%;
+`;
+
+export const LessonTitle = styled.h2`
+  color: #fff;
+  font-family: OpenSans-Bold;
+`;
+
+export const BottomTab = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  padding: 16px;
+  width: 100%;
+`;
+
+export const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 export const OptionButtonLabel = styled.p`
   margin-right: 8px;
 `;

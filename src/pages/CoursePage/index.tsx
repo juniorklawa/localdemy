@@ -5,17 +5,22 @@ import asyncLocalStorage from '../../services/asyncLocalStorage';
 import { ICourse } from '../HomePage';
 import { AddCourseButton } from '../HomePage/styles';
 import {
+  BottomTab,
+  ClassesContainer,
   Container,
+  ContentContainer,
   CourseTitle,
   GoBackButton,
   GoBackIcon,
   Icon,
+  LessonTitle,
   NavigationContainer,
   OptionButton,
   OptionButtonLabel,
   OptionsContainer,
   StyledModal,
   Toolbar,
+  VideoContainer,
 } from './styles';
 
 interface IRouteParams {
@@ -223,13 +228,8 @@ const CoursePage = () => {
         </OptionsContainer>
       </Toolbar>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-        }}
-      >
-        <div style={{ width: '75%', height: '100%' }}>
+      <ContentContainer>
+        <VideoContainer>
           {currentCourse.lessons[currentIndex].type === 'application/pdf' ? (
             <div>
               <iframe
@@ -258,28 +258,14 @@ const CoursePage = () => {
             </video>
           )}
 
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              marginTop: 16,
-              justifyContent: 'space-between',
-              flex: 1,
-              width: '100%',
-            }}
-          >
-            <div style={{ padding: 16 }}>
-              <h2 style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
-                {`${
-                  currentCourse?.lessons[currentIndex].name.split('.mp4')[0]
-                }`}
-              </h2>
-            </div>
+          <BottomTab>
+            <LessonTitle>
+              {`${currentCourse?.lessons[currentIndex].name.split('.mp4')[0]}`}
+            </LessonTitle>
             <button
               type="button"
               onClick={handleGoToNext}
               style={{
-                margin: 16,
                 padding: 16,
                 color: '#fff',
                 backgroundColor: '#00C853',
@@ -289,36 +275,25 @@ const CoursePage = () => {
             >
               Finish and go to Next
             </button>
+          </BottomTab>
+        </VideoContainer>
 
-            <Switch
-              onChange={(isChecked) => handleAutoPlay(isChecked)}
-              checked={autoPlayEnabled}
-            />
-          </div>
-        </div>
+        <ClassesContainer>
+          <Switch
+            onChange={(isChecked) => handleAutoPlay(isChecked)}
+            checked={autoPlayEnabled}
+          />
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: '#212121',
-            width: '25%',
-            height: '100vh',
-            alignItems: 'center',
-            borderWidth: 3,
-            overflow: 'auto',
-          }}
-        >
           {currentCourse?.lessons?.map((item, i) => (
             <button
               type="button"
               onClick={() => setCurrentIndex(i)}
               style={{
-                margin: 8,
+                margin: 4,
                 padding: 16,
                 backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
                 display: 'flex',
-                width: '80%',
+                width: '100%',
                 justifyContent: 'space-evenly',
                 alignItems: 'center',
               }}
@@ -351,8 +326,8 @@ const CoursePage = () => {
               </p>
             </button>
           ))}
-        </div>
-      </div>
+        </ClassesContainer>
+      </ContentContainer>
 
       <StyledModal
         isOpen={modalIsOpen}
