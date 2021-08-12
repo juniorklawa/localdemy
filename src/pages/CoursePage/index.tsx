@@ -4,7 +4,19 @@ import Switch from 'react-switch';
 import asyncLocalStorage from '../../services/asyncLocalStorage';
 import { ICourse } from '../HomePage';
 import { AddCourseButton } from '../HomePage/styles';
-import { StyledModal } from './styles';
+import {
+  Container,
+  CourseTitle,
+  GoBackButton,
+  GoBackIcon,
+  Icon,
+  NavigationContainer,
+  OptionButton,
+  OptionButtonLabel,
+  OptionsContainer,
+  StyledModal,
+  Toolbar,
+} from './styles';
 
 interface IRouteParams {
   id: string;
@@ -188,62 +200,28 @@ const CoursePage = () => {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        margin: 0,
-        flex: 1,
-        padding: 0,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          backgroundColor: '#263238',
-        }}
-      >
-        <button type="button" onClick={() => history.push('/')}>
-          <img
-            style={{
-              height: 24,
-              width: 24,
-            }}
-            src="./left-chevron.png"
-            alt="thumbnail"
-          />
-        </button>
+    <Container>
+      <Toolbar>
+        <NavigationContainer>
+          <GoBackButton type="button" onClick={() => history.push('/')}>
+            <Icon src="./left-chevron.png" />
+          </GoBackButton>
 
-        <div
-          style={{
-            height: 50,
-            width: '100%',
-            backgroundColor: '#263238',
-            padding: 8,
-            alignItems: 'center',
-            flexDirection: 'row',
-            flex: 1,
-            justifyContent: 'center',
-          }}
-        >
-          <h2 style={{ color: '#fff', fontFamily: 'OpenSans-ExtraBold' }}>
-            {currentCourse?.courseTitle}
-          </h2>
-        </div>
+          <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
+        </NavigationContainer>
 
-        <button
-          style={{ marginRight: 320 }}
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Edit
-        </button>
+        <OptionsContainer>
+          <OptionButton type="button" onClick={() => setIsModalOpen(true)}>
+            <OptionButtonLabel>Edit</OptionButtonLabel>
+            <Icon src="./editing.png" />
+          </OptionButton>
 
-        <button type="button" onClick={() => handleDeleteCourse()}>
-          Deletar
-        </button>
-      </div>
+          <OptionButton type="button" onClick={() => handleDeleteCourse()}>
+            <OptionButtonLabel>Delete</OptionButtonLabel>
+            <Icon src="./delete.png" />
+          </OptionButton>
+        </OptionsContainer>
+      </Toolbar>
 
       <div
         style={{
@@ -454,7 +432,7 @@ const CoursePage = () => {
           </button>
         </div>
       </StyledModal>
-    </div>
+    </Container>
   );
 };
 
