@@ -24,8 +24,7 @@
 ### 1.5 Onboarding Layouts
 - Course Onboarding
 ### 1.6 Finished Course Modal
-- Archive course
-- FTP
+
 
 ### 1.7 Extra Features
 - Archive course

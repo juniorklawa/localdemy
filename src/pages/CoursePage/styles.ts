@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 import ReactModal from 'react-modal';
 
+interface ClassProps {
+  currentIndex: number;
+  lessonIndex: number;
+}
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -16,6 +21,18 @@ export const Toolbar = styled.div`
   align-items: center;
   padding: 16px;
   justify-content: space-between;
+`;
+
+export const ClassContainerButton = styled.button<ClassProps>`
+  max-height: 70px;
+  padding: 16px;
+  background-color: ${({ currentIndex, lessonIndex }) =>
+    currentIndex === lessonIndex ? '#454E55' : '#2A2E35'};
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 0.1px solid #212121;
 `;
 
 export const NavigationContainer = styled.div`
@@ -42,7 +59,7 @@ export const ClassesContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #212121;
-  width: 25%;
+  width: 100%;
   height: 100vh;
   align-items: center;
   border-width: 3px;

@@ -6,6 +6,7 @@ import { ICourse } from '../HomePage';
 import { AddCourseButton } from '../HomePage/styles';
 import {
   BottomTab,
+  ClassContainerButton,
   ClassesContainer,
   Container,
   ContentContainer,
@@ -41,6 +42,17 @@ const CoursePage = () => {
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
   }
+
+  const getProgressPercentage = () => {
+    const completedLength = currentCourse.lessons.filter(
+      (lesson) => lesson.isCompleted
+    ).length;
+
+    const percentage = Math.floor(
+      (completedLength / currentCourse.lessons.length) * 100
+    );
+    return `${percentage}%`;
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -98,10 +110,12 @@ const CoursePage = () => {
       JSON.stringify(updatedCurrentCourse)
     );
 
-    if (currentIndex !== currentCourse.lessons.length - 1) {
-      setTimeout(() => {
-        setCurrentIndex((prevState) => prevState + 1);
-      }, 2000);
+    if (autoPlayEnabled) {
+      if (currentIndex !== currentCourse.lessons.length - 1) {
+        setTimeout(() => {
+          setCurrentIndex((prevState) => prevState + 1);
+        }, 2000);
+      }
     }
   };
 
@@ -241,21 +255,23 @@ const CoursePage = () => {
               />
             </div>
           ) : (
-            <video
-              autoPlay={autoPlayEnabled}
-              key={currentCourse.lessons[currentIndex].path}
-              width="100%"
-              onPause={(e) => saveLastPosition(e)}
-              onEnded={() => markLessonAsCompleted(currentIndex)}
-              controls
-            >
-              <source
-                src={`${currentCourse.lessons[currentIndex].path}#t=${
-                  currentCourse.lessons[currentIndex].lastPosition || 0
-                }`}
-                type="video/mp4"
-              />
-            </video>
+            <div style={{ minHeight: 810 }}>
+              <video
+                autoPlay={autoPlayEnabled}
+                key={currentCourse.lessons[currentIndex].path}
+                width="100%"
+                onPause={(e) => saveLastPosition(e)}
+                onEnded={() => markLessonAsCompleted(currentIndex)}
+                controls
+              >
+                <source
+                  src={`${currentCourse.lessons[currentIndex].path}#t=${
+                    currentCourse.lessons[currentIndex].lastPosition || 0
+                  }`}
+                  type="video/mp4"
+                />
+              </video>
+            </div>
           )}
 
           <BottomTab>
@@ -278,55 +294,94 @@ const CoursePage = () => {
           </BottomTab>
         </VideoContainer>
 
-        <ClassesContainer>
-          <Switch
-            onChange={(isChecked) => handleAutoPlay(isChecked)}
-            checked={autoPlayEnabled}
-          />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            width: '100%',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              padding: 16,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff' }}>
+              {`Progress ${getProgressPercentage()}`}
+            </p>
+            <Switch
+              onChange={(isChecked) => handleAutoPlay(isChecked)}
+              checked={autoPlayEnabled}
+            />
+          </div>
 
-          {currentCourse?.lessons?.map((item, i) => (
-            <button
-              type="button"
-              onClick={() => setCurrentIndex(i)}
-              style={{
-                margin: 4,
-                padding: 16,
-                backgroundColor: currentIndex === i ? '#454E55' : '#2A2E35',
-                display: 'flex',
-                width: '100%',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-              }}
-              key={String(i)}
-            >
-              {currentCourse.lessons[i].isCompleted ? (
-                <div
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    backgroundColor: 'green',
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 15,
-                    backgroundColor: '#bdbdbd',
-                  }}
-                />
-              )}
-
-              <p
-                style={{ color: '#fff', fontFamily: 'OpenSans-Bold', flex: 3 }}
+          <ClassesContainer>
+            {currentCourse?.lessons?.map((item, i) => (
+              <ClassContainerButton
+                currentIndex={currentIndex}
+                lessonIndex={i}
+                type="button"
+                onClick={() => setCurrentIndex(i)}
+                key={String(item.path)}
               >
-                {item.name}
-              </p>
-            </button>
-          ))}
-        </ClassesContainer>
+                {currentCourse.lessons[i].isCompleted ? (
+                  <div
+                    style={{
+                      height: 30,
+                      width: 30,
+                      borderRadius: 15,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: '#00C853',
+                    }}
+                  >
+                    <Icon
+                      style={{ height: 15, width: 15 }}
+                      src="./check-mark.png"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      height: 30,
+                      width: 30,
+                      borderRadius: 15,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: '#bdbdbd',
+                    }}
+                  >
+                    <Icon
+                      style={{ height: 15, width: 15 }}
+                      src="./check-mark.png"
+                    />
+                  </div>
+                )}
+
+                <p
+                  style={{
+                    color: '#fff',
+                    fontFamily: 'OpenSans-Bold',
+                    flex: 3,
+                    textAlign: 'left',
+                    marginLeft: 16,
+                    fontSize: 14,
+                  }}
+                >
+                  {item.name}
+                </p>
+              </ClassContainerButton>
+            ))}
+          </ClassesContainer>
+        </div>
       </ContentContainer>
 
       <StyledModal
