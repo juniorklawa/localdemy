@@ -12,21 +12,34 @@
 
 - ~HomePage Layout~
 
-### 1.2 Edit Feature
+### ~1.2 Edit Feature~
+
 - ~Edit file and course title name~
-- Edit course thumbnail
+- ~Edit course thumbnail~
 
 ### 1.3 CoursePageLayout
+
 - Course and Edit Layout
+- Show video length is lessons list
+
 ### 1.4 Onboarding Features
+
 - Filter by type (video and pdf)
 - Manual ordering files
+
 ### 1.5 Onboarding Layouts
+
 - Course Onboarding
+
 ### 1.6 Finished Course Modal
 
+- Logic
 
-### 1.7 Extra Features
+### 1.7 Finished Course Modal
+
+- Layout
+
+### 1.8 Extra Features
+
 - Archive course
 - FTP
-

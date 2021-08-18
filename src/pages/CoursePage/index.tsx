@@ -210,8 +210,17 @@ const CoursePage = () => {
     inputFile.current.click();
   };
 
-  const handleFileUpload = (event: any) => {
-    console.log(event.target.files[0]);
+  const handleFileUpload = async (event: any) => {
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      courseThumbnail: event.target.files[0].path,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+    // await asyncLocalStorage.setItem(
+    //   updatedCurrentCourse.id,
+    //   JSON.stringify(updatedCurrentCourse)
+    // );
   };
 
   if (isLoading) {
@@ -427,18 +436,15 @@ const CoursePage = () => {
             alt="course thumbanil"
           />
 
-          <button
-            style={{ alignSelf: 'flex-start' }}
-            type="button"
-            onClick={() => onButtonClick()}
-          >
+          <AddCourseButton type="button" onClick={onButtonClick}>
             <input
+              style={{ display: 'none' }}
               ref={inputFile}
-              onChange={(e) => handleFileUpload(e)}
+              onChange={async (e) => handleFileUpload(e)}
               type="file"
-              name="file"
             />
-          </button>
+            Add
+          </AddCourseButton>
 
           <p style={{ marginTop: 16 }}>Course lessons</p>
 
