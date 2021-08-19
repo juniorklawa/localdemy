@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Switch from 'react-switch';
-import asyncLocalStorage from '../../services/asyncLocalStorage';
-import { ICourse } from '../HomePage';
+import { IState } from '../../store';
+import {
+  deleteCourse,
+  updateCourse,
+} from '../../store/modules/catalog/actions';
+import { ICourse } from '../../store/modules/catalog/types';
 import { AddCourseButton } from '../HomePage/styles';
 import {
   BottomTab,
@@ -12,7 +17,6 @@ import {
   ContentContainer,
   CourseTitle,
   GoBackButton,
-  GoBackIcon,
   Icon,
   LessonTitle,
   NavigationContainer,
@@ -36,7 +40,7 @@ const CoursePage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
-
+  const dispatch = useDispatch();
   const [modalIsOpen, setIsModalOpen] = useState(false);
 
   function afterOpenModal() {
@@ -54,25 +58,27 @@ const CoursePage = () => {
     return `${percentage}%`;
   };
 
+  const selectedCourse = useSelector<IState, ICourse>(
+    (state) =>
+      state.catalog.courses.find(
+        (storagedCourse) => storagedCourse.id === id
+      ) as ICourse
+  );
+
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const loadedCourse = await asyncLocalStorage.getItem(id);
 
-        const parsedCourse: ICourse = JSON.parse(loadedCourse as string);
-
-        if (parsedCourse.lastIndex) {
-          setCurrentIndex(parsedCourse.lastIndex);
+        if (selectedCourse.lastIndex) {
+          setCurrentIndex(selectedCourse.lastIndex);
         }
 
-        if (parsedCourse.autoPlayEnabled) {
+        if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
         }
 
-        setCurrentCourse(parsedCourse);
-
-        console.log(parsedCourse);
+        setCurrentCourse(selectedCourse);
       } catch (err) {
         console.error(err);
       } finally {
@@ -81,7 +87,7 @@ const CoursePage = () => {
     }
 
     fetchData();
-  }, [id]);
+  }, [id, selectedCourse]);
 
   const markLessonAsCompleted = async (lessonIndex: number) => {
     const updatedCurrentCourseLessons = currentCourse.lessons.map(
@@ -105,10 +111,7 @@ const CoursePage = () => {
     };
 
     setCurrentCourse(updatedCurrentCourse);
-    await asyncLocalStorage.setItem(
-      updatedCurrentCourse.id,
-      JSON.stringify(updatedCurrentCourse)
-    );
+    dispatch(updateCourse(updatedCurrentCourse));
 
     if (autoPlayEnabled) {
       if (currentIndex !== currentCourse.lessons.length - 1) {
@@ -136,16 +139,13 @@ const CoursePage = () => {
     };
 
     setCurrentCourse(updatedCurrentCourse);
-    await asyncLocalStorage.setItem(
-      updatedCurrentCourse.id,
-      JSON.stringify(updatedCurrentCourse)
-    );
+    dispatch(updateCourse(updatedCurrentCourse));
   };
 
   const history = useHistory();
 
   const handleDeleteCourse = () => {
-    localStorage.removeItem(id);
+    dispatch(deleteCourse(currentCourse));
     history.push('/');
   };
 
@@ -170,10 +170,7 @@ const CoursePage = () => {
     };
 
     setCurrentCourse(updatedCurrentCourse);
-    await asyncLocalStorage.setItem(
-      updatedCurrentCourse.id,
-      JSON.stringify(updatedCurrentCourse)
-    );
+    dispatch(updateCourse(updatedCurrentCourse));
   };
 
   const handleOnInputLessonNameChange = async (e: any, lessonPath: string) => {
@@ -199,13 +196,6 @@ const CoursePage = () => {
     setCurrentCourse(updatedCurrentCourse);
   };
 
-  const saveCurrentCourse = async () => {
-    await asyncLocalStorage.setItem(
-      currentCourse.id,
-      JSON.stringify(currentCourse)
-    );
-  };
-
   const onButtonClick = () => {
     inputFile.current.click();
   };
@@ -217,10 +207,6 @@ const CoursePage = () => {
     };
 
     setCurrentCourse(updatedCurrentCourse);
-    // await asyncLocalStorage.setItem(
-    //   updatedCurrentCourse.id,
-    //   JSON.stringify(updatedCurrentCourse)
-    // );
   };
 
   if (isLoading) {
@@ -460,7 +446,7 @@ const CoursePage = () => {
           <button
             type="button"
             onClick={async () => {
-              saveCurrentCourse();
+              dispatch(updateCourse(currentCourse));
               setIsModalOpen(false);
             }}
           >
