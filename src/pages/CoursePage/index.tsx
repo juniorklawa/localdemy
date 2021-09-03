@@ -112,7 +112,7 @@ const CoursePage = () => {
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
       lessons: updatedCurrentCourseLessons,
-      lastIndex: currentIndex,
+      lastIndex: currentIndex + 1,
     };
 
     setCurrentCourse(updatedCurrentCourse);
