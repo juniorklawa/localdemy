@@ -38,9 +38,9 @@ button {
   -webkit-appearance: none;
 }
 
-#root {
+/* #root {
   max-width: 960px;
-}
+} */
 
 @font-face {
   font-family: 'OpenSans-Bold';

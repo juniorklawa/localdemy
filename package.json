@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Localdemy",
+    "appId": "org.klawapps.localdemy",
     "files": [
       "dist/",
       "node_modules/",
