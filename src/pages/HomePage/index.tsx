@@ -26,6 +26,8 @@ import {
   Toolbar,
 } from './styles';
 
+import white_shrug from '../../white_shrukg.png';
+
 declare module 'react' {
   interface HTMLAttributes<T> {
     directory?: string;
@@ -168,7 +170,7 @@ const HomePage: React.FC = () => {
         </>
       ) : (
         <EmptyListContainer>
-          <Shrug alt="thumbnail" src="./white_shrukg.png" />
+          <Shrug alt="thumbnail" src={white_shrug} />
           <EmptyListLabel>
             Looks like you haven't added any courses yet, press the green button
             to add the first one!

@@ -28,6 +28,11 @@ import {
   VideoContainer,
 } from './styles';
 
+import check_mark from '../../check-mark.png';
+import left_chevron from '../../left-chevron.png';
+import editing from '../../editing.png';
+import deleteIcon from '../../delete.png';
+
 interface IRouteParams {
   id: string;
 }
@@ -149,7 +154,7 @@ const CoursePage = () => {
     history.push('/');
   };
 
-  const saveLastPosition = async (e) => {
+  const saveLastPosition = async (e: any) => {
     const updatedCurrentCourseLessons = currentCourse.lessons.map(
       (lesson, index) => {
         if (index === currentIndex) {
@@ -218,7 +223,7 @@ const CoursePage = () => {
       <Toolbar>
         <NavigationContainer>
           <GoBackButton type="button" onClick={() => history.push('/')}>
-            <Icon src="./left-chevron.png" />
+            <Icon src={left_chevron} />
           </GoBackButton>
 
           <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
@@ -227,12 +232,12 @@ const CoursePage = () => {
         <OptionsContainer>
           <OptionButton type="button" onClick={() => setIsModalOpen(true)}>
             <OptionButtonLabel>Edit</OptionButtonLabel>
-            <Icon src="./editing.png" />
+            <Icon src={editing} />
           </OptionButton>
 
           <OptionButton type="button" onClick={() => handleDeleteCourse()}>
             <OptionButtonLabel>Delete</OptionButtonLabel>
-            <Icon src="./delete.png" />
+            <Icon src={deleteIcon} />
           </OptionButton>
         </OptionsContainer>
       </Toolbar>
@@ -337,10 +342,7 @@ const CoursePage = () => {
                       backgroundColor: '#00C853',
                     }}
                   >
-                    <Icon
-                      style={{ height: 15, width: 15 }}
-                      src="./check-mark.png"
-                    />
+                    <Icon style={{ height: 15, width: 15 }} src={check_mark} />
                   </div>
                 ) : (
                   <div
@@ -354,10 +356,7 @@ const CoursePage = () => {
                       backgroundColor: '#bdbdbd',
                     }}
                   >
-                    <Icon
-                      style={{ height: 15, width: 15 }}
-                      src="./check-mark.png"
-                    />
+                    <Icon style={{ height: 15, width: 15 }} src={check_mark} />
                   </div>
                 )}
 
