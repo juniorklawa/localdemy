@@ -10,6 +10,7 @@ import {
   loadStoragedCourses,
 } from '../../store/modules/catalog/actions';
 import { ICourse, IVideo } from '../../store/modules/catalog/types';
+import white_shrug from '../../white_shrukg.png';
 import {
   AddCourseButton,
   Container,
@@ -25,8 +26,6 @@ import {
   Title,
   Toolbar,
 } from './styles';
-
-import white_shrug from '../../white_shrukg.png';
 
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -97,9 +96,7 @@ const HomePage: React.FC = () => {
           .sort((a, b) => {
             return naturalSorting(a.name, b.name);
           })
-          .filter(
-            (file) => file.type.includes('video') || file.type.includes('pdf')
-          );
+          .filter((file) => file.type.includes('video'));
 
         const courseModules = [];
 
@@ -138,9 +135,7 @@ const HomePage: React.FC = () => {
             .sort((a, b) => {
               return naturalSorting(a.name, b.name);
             })
-            .filter(
-              (file) => file.type.includes('video') || file.type.includes('pdf')
-            ),
+            .filter((file) => file.type.includes('video')),
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
@@ -200,13 +195,13 @@ const HomePage: React.FC = () => {
             style={{ flexWrap: 'wrap', display: 'flex', marginTop: 32 }}
           >
             {courses.map((course) => {
-              const completedLength = course.lessons.filter(
-                (lesson) => lesson.isCompleted
-              ).length;
+              // const completedLength = course.lessons.filter(
+              //   (lesson) => lesson.isCompleted
+              // ).length;
 
-              const percentage = Math.floor(
-                (completedLength / course.lessons.length) * 100
-              );
+              // const percentage = Math.floor(
+              //   (completedLength / course.lessons.length) * 100
+              // );
 
               return (
                 <CourseContainer
@@ -220,7 +215,7 @@ const HomePage: React.FC = () => {
                   />
                   <InfoContainer>
                     <CourseTitle> {course.courseTitle}</CourseTitle>
-                    <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
+                    <ProgressLabel>{`${100}% concluido`}</ProgressLabel>
                   </InfoContainer>
                 </CourseContainer>
               );

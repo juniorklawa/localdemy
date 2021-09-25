@@ -170,6 +170,16 @@ const CoursePage = () => {
 
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
+      modules: currentCourse.modules.map((module, index) => {
+        if (index === currentModuleIndex) {
+          return {
+            ...module,
+            lessons: updatedCurrentCourseLessons,
+          };
+        }
+
+        return module;
+      }),
       lessons: updatedCurrentCourseLessons,
       lastIndex: currentIndex,
     };
