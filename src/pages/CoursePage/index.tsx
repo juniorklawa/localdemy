@@ -53,13 +53,20 @@ const CoursePage = () => {
   }
 
   const getProgressPercentage = () => {
-    const completedLength = currentCourse.lessons.filter(
-      (lesson) => lesson.isCompleted
-    ).length;
+    const completedLength = currentCourse.modules.reduce((acc, item) => {
+      const completedModuleLength = item.lessons.filter(
+        (lesson) => lesson.isCompleted
+      ).length;
 
-    const percentage = Math.floor(
-      (completedLength / currentCourse.lessons.length) * 100
-    );
+      return acc + completedModuleLength;
+    }, 0);
+
+    const totalLength = currentCourse.modules.reduce((acc, item) => {
+      return acc + item.lessons.length;
+    }, 0);
+
+    const percentage = Math.floor((completedLength / totalLength) * 100);
+
     return `${percentage}%`;
   };
 
@@ -75,9 +82,9 @@ const CoursePage = () => {
       try {
         setIsLoading(true);
 
-        if (selectedCourse.lastIndex) {
-          setCurrentIndex(selectedCourse.lastIndex);
-        }
+        // if (selectedCourse.lastIndex) {
+        //   setCurrentIndex(selectedCourse.lastIndex);
+        // }
 
         if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
@@ -112,7 +119,17 @@ const CoursePage = () => {
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
       lessons: updatedCurrentCourseLessons,
-      lastIndex: currentIndex + 1,
+      modules: currentCourse.modules.map((module, index) => {
+        if (index === currentModuleIndex) {
+          return {
+            ...module,
+            lessons: updatedCurrentCourseLessons,
+          };
+        }
+
+        return module;
+      }),
+      lastIndex: currentIndex,
     };
 
     setCurrentCourse(updatedCurrentCourse);
@@ -130,9 +147,9 @@ const CoursePage = () => {
   const handleGoToNext = () => {
     markLessonAsCompleted(currentIndex);
 
-    if (currentIndex !== currentCourse.lessons.length - 1) {
-      setCurrentIndex((prevState) => prevState + 1);
-    }
+    // if (currentIndex !== currentCourse.lessons.length - 1) {
+    //   setCurrentIndex((prevState) => prevState + 1);
+    // }
   };
 
   const handleAutoPlay = async (isChecked: boolean) => {

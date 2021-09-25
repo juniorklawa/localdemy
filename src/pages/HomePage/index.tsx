@@ -195,13 +195,21 @@ const HomePage: React.FC = () => {
             style={{ flexWrap: 'wrap', display: 'flex', marginTop: 32 }}
           >
             {courses.map((course) => {
-              // const completedLength = course.lessons.filter(
-              //   (lesson) => lesson.isCompleted
-              // ).length;
+              const completedLength = course.modules.reduce((acc, item) => {
+                const completedModuleLength = item.lessons.filter(
+                  (lesson) => lesson.isCompleted
+                ).length;
 
-              // const percentage = Math.floor(
-              //   (completedLength / course.lessons.length) * 100
-              // );
+                return acc + completedModuleLength;
+              }, 0);
+
+              const totalLength = course.modules.reduce((acc, item) => {
+                return acc + item.lessons.length;
+              }, 0);
+
+              const percentage = Math.floor(
+                (completedLength / totalLength) * 100
+              );
 
               return (
                 <CourseContainer
@@ -215,7 +223,7 @@ const HomePage: React.FC = () => {
                   />
                   <InfoContainer>
                     <CourseTitle> {course.courseTitle}</CourseTitle>
-                    <ProgressLabel>{`${100}% concluido`}</ProgressLabel>
+                    <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
                   </InfoContainer>
                 </CourseContainer>
               );
