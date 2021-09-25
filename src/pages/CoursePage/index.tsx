@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Switch from 'react-switch';
+import check_mark from '../../check-mark.png';
+import deleteIcon from '../../delete.png';
+import editing from '../../editing.png';
+import left_chevron from '../../left-chevron.png';
 import { IState } from '../../store';
 import {
   deleteCourse,
@@ -28,11 +32,6 @@ import {
   VideoContainer,
 } from './styles';
 
-import check_mark from '../../check-mark.png';
-import left_chevron from '../../left-chevron.png';
-import editing from '../../editing.png';
-import deleteIcon from '../../delete.png';
-
 interface IRouteParams {
   id: string;
 }
@@ -43,6 +42,7 @@ const CoursePage = () => {
   const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
   const dispatch = useDispatch();
@@ -95,19 +95,19 @@ const CoursePage = () => {
   }, [id, selectedCourse]);
 
   const markLessonAsCompleted = async (lessonIndex: number) => {
-    const updatedCurrentCourseLessons = currentCourse.lessons.map(
-      (lesson, index) => {
-        if (index === lessonIndex) {
-          return {
-            ...lesson,
-            isCompleted: true,
-            lastPosition: 0,
-          };
-        }
-
-        return lesson;
+    const updatedCurrentCourseLessons = currentCourse.modules[
+      currentModuleIndex
+    ].lessons.map((lesson, index) => {
+      if (index === lessonIndex) {
+        return {
+          ...lesson,
+          isCompleted: true,
+          lastPosition: 0,
+        };
       }
-    );
+
+      return lesson;
+    });
 
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
@@ -155,18 +155,18 @@ const CoursePage = () => {
   };
 
   const saveLastPosition = async (e: any) => {
-    const updatedCurrentCourseLessons = currentCourse.lessons.map(
-      (lesson, index) => {
-        if (index === currentIndex) {
-          return {
-            ...lesson,
-            lastPosition: e.target.currentTime,
-          };
-        }
-
-        return lesson;
+    const updatedCurrentCourseLessons = currentCourse.modules[
+      currentModuleIndex
+    ].lessons.map((lesson, index) => {
+      if (index === currentIndex) {
+        return {
+          ...lesson,
+          lastPosition: e.target.currentTime,
+        };
       }
-    );
+
+      return lesson;
+    });
 
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
@@ -258,15 +258,25 @@ const CoursePage = () => {
             <div style={{ minHeight: 810 }}>
               <video
                 autoPlay={autoPlayEnabled}
-                key={currentCourse.lessons[currentIndex].path}
+                key={
+                  currentCourse.modules[currentModuleIndex].lessons[
+                    currentIndex
+                  ].path
+                }
                 width="100%"
                 onPause={(e) => saveLastPosition(e)}
                 onEnded={() => markLessonAsCompleted(currentIndex)}
                 controls
               >
                 <source
-                  src={`${currentCourse.lessons[currentIndex].path}#t=${
-                    currentCourse.lessons[currentIndex].lastPosition || 0
+                  src={`${
+                    currentCourse.modules[currentModuleIndex].lessons[
+                      currentIndex
+                    ].path
+                  }#t=${
+                    currentCourse.modules[currentModuleIndex].lessons[
+                      currentIndex
+                    ].lastPosition || 0
                   }`}
                   type="video/mp4"
                 />
@@ -322,58 +332,101 @@ const CoursePage = () => {
           </div>
 
           <ClassesContainer>
-            {currentCourse?.lessons?.map((item, i) => (
-              <ClassContainerButton
-                currentIndex={currentIndex}
-                lessonIndex={i}
-                type="button"
-                onClick={() => setCurrentIndex(i)}
-                key={String(item.path)}
-              >
-                {currentCourse.lessons[i].isCompleted ? (
-                  <div
-                    style={{
-                      height: 30,
-                      width: 30,
-                      borderRadius: 15,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: '#00C853',
-                    }}
-                  >
-                    <Icon style={{ height: 15, width: 15 }} src={check_mark} />
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      height: 30,
-                      width: 30,
-                      borderRadius: 15,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: '#bdbdbd',
-                    }}
-                  >
-                    <Icon style={{ height: 15, width: 15 }} src={check_mark} />
-                  </div>
-                )}
-
-                <p
+            {currentCourse?.modules?.map((module, moduleIndex) => {
+              return (
+                <div
                   style={{
-                    color: '#fff',
-                    fontFamily: 'OpenSans-Bold',
-                    flex: 3,
-                    textAlign: 'left',
-                    marginLeft: 16,
-                    fontSize: 14,
+                    backgroundColor: '#949494',
+                    width: '100%',
+                    margin: 16,
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
+                  key={String(module.path)}
                 >
-                  {item.name}
-                </p>
-              </ClassContainerButton>
-            ))}
+                  <div style={{ padding: 36 }}>
+                    <p
+                      style={{
+                        color: '#fff',
+                        fontFamily: 'OpenSans-Bold',
+                        flex: 3,
+                        textAlign: 'left',
+                        marginLeft: 16,
+                        fontSize: 14,
+                      }}
+                    >
+                      {module.title}
+                    </p>
+                  </div>
+
+                  {module?.lessons?.map((item, i) => (
+                    <ClassContainerButton
+                      currentIndex={currentIndex}
+                      isSelected={
+                        currentIndex === i && currentModuleIndex === moduleIndex
+                      }
+                      lessonIndex={i}
+                      type="button"
+                      onClick={() => {
+                        setCurrentIndex(i);
+                        setCurrentModuleIndex(moduleIndex);
+                      }}
+                      key={String(item.path)}
+                    >
+                      {module.lessons[i].isCompleted ? (
+                        <div
+                          style={{
+                            height: 30,
+                            width: 30,
+                            borderRadius: 15,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#00C853',
+                          }}
+                        >
+                          <Icon
+                            style={{ height: 15, width: 15 }}
+                            src={check_mark}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            height: 30,
+                            width: 30,
+                            borderRadius: 15,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#bdbdbd',
+                          }}
+                        >
+                          <Icon
+                            style={{ height: 15, width: 15 }}
+                            src={check_mark}
+                          />
+                        </div>
+                      )}
+
+                      <p
+                        style={{
+                          color: '#fff',
+                          fontFamily: 'OpenSans-Bold',
+                          flex: 3,
+                          textAlign: 'left',
+                          marginLeft: 16,
+                          fontSize: 14,
+                        }}
+                      >
+                        {item.name}
+                      </p>
+                    </ClassContainerButton>
+                  ))}
+                </div>
+              );
+            })}
           </ClassesContainer>
         </div>
       </ContentContainer>

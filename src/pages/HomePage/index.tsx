@@ -57,6 +57,23 @@ const HomePage: React.FC = () => {
             path: file.path,
             type: file.type,
           };
+
+          const allParentsFolders = path
+            .dirname(formattedFile.path)
+            .split(path.sep);
+
+          const folderName = allParentsFolders.slice(4, 5)[0];
+
+          const courseTitleIndex = allParentsFolders.findIndex(
+            (file) => file === folderName
+          );
+
+          const parentFolderName = allParentsFolders[courseTitleIndex + 1];
+
+          if (folderName) {
+            console.log(parentFolderName);
+          }
+
           formattedFiles.push(formattedFile);
         });
         const folderName = path
@@ -75,7 +92,47 @@ const HomePage: React.FC = () => {
             file.name.includes('thumbnail') &&
             validImageTypes.includes(file.type)
         );
+
+        const sortedFormatedFiles = formattedFiles
+          .sort((a, b) => {
+            return naturalSorting(a.name, b.name);
+          })
+          .filter(
+            (file) => file.type.includes('video') || file.type.includes('pdf')
+          );
+
+        const courseModules = [];
+
+        sortedFormatedFiles.forEach((formattedFile) => {
+          const allParentsFolders = path
+            .dirname(formattedFile.path)
+            .split(path.sep);
+
+          const folderName = allParentsFolders.slice(4, 5)[0];
+
+          const courseTitleIndex = allParentsFolders.findIndex(
+            (file) => file === folderName
+          );
+
+          const parentFolderName = allParentsFolders[courseTitleIndex + 1];
+
+          const moduleExists = courseModules.find(
+            (module) => module.title === parentFolderName
+          );
+
+          if (!moduleExists) {
+            courseModules.push({
+              title: parentFolderName,
+              lessons: [formattedFile],
+            });
+            return;
+          }
+
+          moduleExists.lessons.push(formattedFile);
+        });
+
         const updatedLoadedCourse: ICourse = {
+          modules: courseModules,
           courseTitle: folderName as string,
           lessons: formattedFiles
             .sort((a, b) => {
@@ -87,6 +144,8 @@ const HomePage: React.FC = () => {
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
+
+        console.log(updatedLoadedCourse);
         dispatch(addNewCourse(updatedLoadedCourse));
       }
     };

@@ -26,8 +26,8 @@ export const Toolbar = styled.div`
 export const ClassContainerButton = styled.button<ClassProps>`
   max-height: 70px;
   padding: 16px;
-  background-color: ${({ currentIndex, lessonIndex }) =>
-    currentIndex === lessonIndex ? '#454E55' : '#2A2E35'};
+  background-color: ${({ currentIndex, lessonIndex, isSelected }) =>
+    isSelected ? '#454E55' : '#2A2E35'};
   display: flex;
   width: 100%;
   justify-content: space-evenly;
