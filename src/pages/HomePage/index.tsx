@@ -9,7 +9,8 @@ import {
   addNewCourse,
   loadStoragedCourses,
 } from '../../store/modules/catalog/actions';
-import { ICourse, IVideo } from '../../store/modules/catalog/types';
+import { ICourse, IModule, IVideo } from '../../store/modules/catalog/types';
+import white_shrug from '../../white_shrukg.png';
 import {
   AddCourseButton,
   Container,
@@ -25,8 +26,6 @@ import {
   Title,
   Toolbar,
 } from './styles';
-
-import white_shrug from '../../white_shrukg.png';
 
 declare module 'react' {
   interface HTMLAttributes<T> {
@@ -57,6 +56,7 @@ const HomePage: React.FC = () => {
             path: file.path,
             type: file.type,
           };
+
           formattedFiles.push(formattedFile);
         });
         const folderName = path
@@ -75,18 +75,53 @@ const HomePage: React.FC = () => {
             file.name.includes('thumbnail') &&
             validImageTypes.includes(file.type)
         );
+
+        const sortedFormatedFiles = formattedFiles
+          .sort((a, b) => {
+            return naturalSorting(a.name, b.name);
+          })
+          .filter((file) => file.type.includes('video'));
+
+        const courseModules: IModule[] = [];
+
+        sortedFormatedFiles.forEach((formattedFile) => {
+          const allParentsFolders = path
+            .dirname(formattedFile.path)
+            .split(path.sep);
+
+          const courseTitleIndex = allParentsFolders.findIndex(
+            (file) => file === folderName
+          );
+
+          const parentFolderName = allParentsFolders[courseTitleIndex + 1];
+
+          const moduleExists = courseModules.find(
+            (module) => module.title === parentFolderName
+          );
+
+          if (!moduleExists) {
+            courseModules.push({
+              title: parentFolderName,
+              lessons: [formattedFile],
+            });
+            return;
+          }
+
+          moduleExists.lessons.push(formattedFile);
+        });
+
         const updatedLoadedCourse: ICourse = {
+          modules: courseModules,
           courseTitle: folderName as string,
-          lessons: formattedFiles
-            .sort((a, b) => {
-              return naturalSorting(a.name, b.name);
-            })
-            .filter(
-              (file) => file.type.includes('video') || file.type.includes('pdf')
-            ),
+          // lessons: formattedFiles
+          //   .sort((a, b) => {
+          //     return naturalSorting(a.name, b.name);
+          //   })
+          //   .filter((file) => file.type.includes('video')),
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
+
         dispatch(addNewCourse(updatedLoadedCourse));
       }
     };
@@ -141,12 +176,20 @@ const HomePage: React.FC = () => {
             style={{ flexWrap: 'wrap', display: 'flex', marginTop: 32 }}
           >
             {courses.map((course) => {
-              const completedLength = course.lessons.filter(
-                (lesson) => lesson.isCompleted
-              ).length;
+              const completedLength = course.modules.reduce((acc, item) => {
+                const completedModuleLength = item.lessons.filter(
+                  (lesson) => lesson.isCompleted
+                ).length;
+
+                return acc + completedModuleLength;
+              }, 0);
+
+              const totalLength = course.modules.reduce((acc, item) => {
+                return acc + item.lessons.length;
+              }, 0);
 
               const percentage = Math.floor(
-                (completedLength / course.lessons.length) * 100
+                (completedLength / totalLength) * 100
               );
 
               return (

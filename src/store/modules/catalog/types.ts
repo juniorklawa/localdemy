@@ -11,7 +11,7 @@ export interface ICatalogState {
 
 export interface ICourse {
   courseTitle: string;
-  lessons: IVideo[];
+  modules: IModule[];
   id: string;
   isCompleted?: boolean;
   courseThumbnail: string;
@@ -25,4 +25,9 @@ export interface IVideo {
   type: string;
   isCompleted?: boolean;
   lastPosition?: number;
+}
+
+export interface IModule {
+  title: string;
+  lessons: IVideo[];
 }
