@@ -12,9 +12,7 @@ export default function App() {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route path="/course/:id">
-            <CoursePage />
-          </Route>
+          <Route path="/course/:id" render={() => <CoursePage />} />
           <Route path="/">
             <HomePage />
           </Route>

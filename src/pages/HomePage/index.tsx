@@ -9,7 +9,7 @@ import {
   addNewCourse,
   loadStoragedCourses,
 } from '../../store/modules/catalog/actions';
-import { ICourse, IVideo } from '../../store/modules/catalog/types';
+import { ICourse, IModule, IVideo } from '../../store/modules/catalog/types';
 import white_shrug from '../../white_shrukg.png';
 import {
   AddCourseButton,
@@ -57,22 +57,6 @@ const HomePage: React.FC = () => {
             type: file.type,
           };
 
-          const allParentsFolders = path
-            .dirname(formattedFile.path)
-            .split(path.sep);
-
-          const folderName = allParentsFolders.slice(4, 5)[0];
-
-          const courseTitleIndex = allParentsFolders.findIndex(
-            (file) => file === folderName
-          );
-
-          const parentFolderName = allParentsFolders[courseTitleIndex + 1];
-
-          if (folderName) {
-            console.log(parentFolderName);
-          }
-
           formattedFiles.push(formattedFile);
         });
         const folderName = path
@@ -98,14 +82,12 @@ const HomePage: React.FC = () => {
           })
           .filter((file) => file.type.includes('video'));
 
-        const courseModules = [];
+        const courseModules: IModule[] = [];
 
         sortedFormatedFiles.forEach((formattedFile) => {
           const allParentsFolders = path
             .dirname(formattedFile.path)
             .split(path.sep);
-
-          const folderName = allParentsFolders.slice(4, 5)[0];
 
           const courseTitleIndex = allParentsFolders.findIndex(
             (file) => file === folderName
@@ -131,16 +113,15 @@ const HomePage: React.FC = () => {
         const updatedLoadedCourse: ICourse = {
           modules: courseModules,
           courseTitle: folderName as string,
-          lessons: formattedFiles
-            .sort((a, b) => {
-              return naturalSorting(a.name, b.name);
-            })
-            .filter((file) => file.type.includes('video')),
+          // lessons: formattedFiles
+          //   .sort((a, b) => {
+          //     return naturalSorting(a.name, b.name);
+          //   })
+          //   .filter((file) => file.type.includes('video')),
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
 
-        console.log(updatedLoadedCourse);
         dispatch(addNewCourse(updatedLoadedCourse));
       }
     };

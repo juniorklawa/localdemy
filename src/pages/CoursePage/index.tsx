@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import Switch from 'react-switch';
 import check_mark from '../../check-mark.png';
 import deleteIcon from '../../delete.png';
 import editing from '../../editing.png';
@@ -101,6 +100,25 @@ const CoursePage = () => {
     fetchData();
   }, [id, selectedCourse]);
 
+  const handleGoToNextLesson = () => {
+    if (
+      currentIndex ===
+        currentCourse.modules[currentModuleIndex].lessons.length - 1 &&
+      currentModuleIndex === currentCourse.modules.length - 1
+    ) {
+      return null;
+    }
+
+    if (
+      currentIndex !==
+      currentCourse.modules[currentModuleIndex].lessons.length - 1
+    ) {
+      return setCurrentIndex((prevState) => prevState + 1);
+    }
+    setCurrentIndex(0);
+    return setCurrentModuleIndex((prevState) => prevState + 1);
+  };
+
   const markLessonAsCompleted = async (lessonIndex: number) => {
     const updatedCurrentCourseLessons = currentCourse.modules[
       currentModuleIndex
@@ -118,7 +136,6 @@ const CoursePage = () => {
 
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
-      lessons: updatedCurrentCourseLessons,
       modules: currentCourse.modules.map((module, index) => {
         if (index === currentModuleIndex) {
           return {
@@ -134,34 +151,11 @@ const CoursePage = () => {
 
     setCurrentCourse(updatedCurrentCourse);
     dispatch(updateCourse(updatedCurrentCourse));
-
-    if (autoPlayEnabled) {
-      if (currentIndex !== currentCourse.lessons.length - 1) {
-        setTimeout(() => {
-          setCurrentIndex((prevState) => prevState + 1);
-        }, 2000);
-      }
-    }
   };
 
   const handleGoToNext = () => {
     markLessonAsCompleted(currentIndex);
-
-    // if (currentIndex !== currentCourse.lessons.length - 1) {
-    //   setCurrentIndex((prevState) => prevState + 1);
-    // }
-  };
-
-  const handleAutoPlay = async (isChecked: boolean) => {
-    setAutoPlayEnabled(isChecked);
-
-    const updatedCurrentCourse: ICourse = {
-      ...currentCourse,
-      autoPlayEnabled: isChecked,
-    };
-
-    setCurrentCourse(updatedCurrentCourse);
-    dispatch(updateCourse(updatedCurrentCourse));
+    handleGoToNextLesson();
   };
 
   const history = useHistory();
@@ -197,7 +191,6 @@ const CoursePage = () => {
 
         return module;
       }),
-      lessons: updatedCurrentCourseLessons,
       lastIndex: currentIndex,
     };
 
@@ -205,10 +198,37 @@ const CoursePage = () => {
     dispatch(updateCourse(updatedCurrentCourse));
   };
 
-  const handleOnInputLessonNameChange = async (e: any, lessonPath: string) => {
-    console.log(e.target.value);
+  const handleOnInputModuleNameChange = async (e: any, moduleIndex: number) => {
+    const updatedCurrentCourseModule = currentCourse.modules.map(
+      (item, index) => {
+        if (index === moduleIndex) {
+          return {
+            ...item,
+            title: e.target.value,
+          };
+        }
 
-    const updatedCurrentCourseLessons = currentCourse.lessons.map((lesson) => {
+        return item;
+      }
+    );
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      modules: updatedCurrentCourseModule,
+      lastIndex: currentIndex,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+  };
+
+  const handleOnInputLessonNameChange = async (
+    e: any,
+    lessonPath: string,
+    moduleIndex: number
+  ) => {
+    const updatedCurrentCourseLessons = currentCourse.modules[
+      moduleIndex
+    ].lessons.map((lesson) => {
       if (lesson.path === lessonPath) {
         return {
           ...lesson,
@@ -219,9 +239,20 @@ const CoursePage = () => {
       return lesson;
     });
 
+    const updatedModules = currentCourse.modules.map((module, index) => {
+      if (index === moduleIndex) {
+        return {
+          ...module,
+          lessons: updatedCurrentCourseLessons,
+        };
+      }
+
+      return module;
+    });
+
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
-      lessons: updatedCurrentCourseLessons,
+      modules: updatedModules,
       lastIndex: currentIndex,
     };
 
@@ -271,49 +302,40 @@ const CoursePage = () => {
 
       <ContentContainer>
         <VideoContainer>
-          {currentCourse.lessons[currentIndex].type === 'application/pdf' ? (
-            <div>
-              <iframe
-                src={currentCourse.lessons[currentIndex].path}
-                frameBorder="0"
-                height={740}
-                width="100%"
-                title="pdf"
-              />
-            </div>
-          ) : (
-            <div style={{ minHeight: 810 }}>
-              <video
-                autoPlay={autoPlayEnabled}
-                key={
+          <div style={{ minHeight: 810 }}>
+            <video
+              autoPlay={autoPlayEnabled}
+              key={
+                currentCourse.modules[currentModuleIndex].lessons[currentIndex]
+                  .path
+              }
+              width="100%"
+              onPause={(e) => saveLastPosition(e)}
+              onEnded={() => markLessonAsCompleted(currentIndex)}
+              controls
+            >
+              <source
+                src={`${
                   currentCourse.modules[currentModuleIndex].lessons[
                     currentIndex
                   ].path
-                }
-                width="100%"
-                onPause={(e) => saveLastPosition(e)}
-                onEnded={() => markLessonAsCompleted(currentIndex)}
-                controls
-              >
-                <source
-                  src={`${
-                    currentCourse.modules[currentModuleIndex].lessons[
-                      currentIndex
-                    ].path
-                  }#t=${
-                    currentCourse.modules[currentModuleIndex].lessons[
-                      currentIndex
-                    ].lastPosition || 0
-                  }`}
-                  type="video/mp4"
-                />
-              </video>
-            </div>
-          )}
+                }#t=${
+                  currentCourse.modules[currentModuleIndex].lessons[
+                    currentIndex
+                  ].lastPosition || 0
+                }`}
+                type="video/mp4"
+              />
+            </video>
+          </div>
 
           <BottomTab>
             <LessonTitle>
-              {`${currentCourse?.lessons[currentIndex].name.split('.mp4')[0]}`}
+              {`${
+                currentCourse?.modules[currentModuleIndex].lessons[
+                  currentIndex
+                ].name.split('.mp4')[0]
+              }`}
             </LessonTitle>
             <button
               type="button"
@@ -352,10 +374,6 @@ const CoursePage = () => {
             <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff' }}>
               {`Progress ${getProgressPercentage()}`}
             </p>
-            <Switch
-              onChange={(isChecked) => handleAutoPlay(isChecked)}
-              checked={autoPlayEnabled}
-            />
           </div>
 
           <ClassesContainer>
@@ -370,7 +388,7 @@ const CoursePage = () => {
                     display: 'flex',
                     flexDirection: 'column',
                   }}
-                  key={String(module.path)}
+                  key={String(module.title)}
                 >
                   <div style={{ padding: 36 }}>
                     <p
@@ -389,11 +407,9 @@ const CoursePage = () => {
 
                   {module?.lessons?.map((item, i) => (
                     <ClassContainerButton
-                      currentIndex={currentIndex}
                       isSelected={
                         currentIndex === i && currentModuleIndex === moduleIndex
                       }
-                      lessonIndex={i}
                       type="button"
                       onClick={() => {
                         setCurrentIndex(i);
@@ -460,6 +476,7 @@ const CoursePage = () => {
 
       <StyledModal
         isOpen={modalIsOpen}
+        ariaHideApp={false}
         onAfterOpen={afterOpenModal}
         onRequestClose={() => setIsModalOpen(false)}
         contentLabel="Example Modal"
@@ -511,16 +528,32 @@ const CoursePage = () => {
             Add
           </AddCourseButton>
 
-          <p style={{ marginTop: 16 }}>Course lessons</p>
+          <p style={{ marginTop: 16 }}>Course Modules</p>
 
-          {currentCourse.lessons.map((lesson) => (
-            <input
-              onChange={(e) => handleOnInputLessonNameChange(e, lesson.path)}
-              key={lesson.path}
-              style={{ margin: 8 }}
-              value={lesson.name}
-            />
-          ))}
+          {currentCourse.modules.map((module, index) => {
+            return (
+              <>
+                <input
+                  onChange={(e) => handleOnInputModuleNameChange(e, index)}
+                  key={String(index)}
+                  style={{ margin: 8, backgroundColor: 'blue' }}
+                  value={module.title}
+                />
+                {currentCourse.modules[index].lessons.map((lesson) => (
+                  <input
+                    onChange={(e) =>
+                      handleOnInputLessonNameChange(e, lesson.path, index)
+                    }
+                    key={lesson.path}
+                    style={{ margin: 8 }}
+                    value={lesson.name}
+                  />
+                ))}
+              </>
+            );
+          })}
+
+          <></>
 
           <button
             type="button"
