@@ -103,6 +103,7 @@ const HomePage: React.FC = () => {
             courseModules.push({
               title: parentFolderName,
               lessons: [formattedFile],
+              sectionActive: true,
             });
             return;
           }
@@ -113,11 +114,7 @@ const HomePage: React.FC = () => {
         const updatedLoadedCourse: ICourse = {
           modules: courseModules,
           courseTitle: folderName as string,
-          // lessons: formattedFiles
-          //   .sort((a, b) => {
-          //     return naturalSorting(a.name, b.name);
-          //   })
-          //   .filter((file) => file.type.includes('video')),
+
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
