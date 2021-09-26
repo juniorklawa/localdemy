@@ -390,20 +390,22 @@ const CoursePage = () => {
                   }}
                   key={String(module.title)}
                 >
-                  <div style={{ padding: 36 }}>
-                    <p
-                      style={{
-                        color: '#fff',
-                        fontFamily: 'OpenSans-Bold',
-                        flex: 3,
-                        textAlign: 'left',
-                        marginLeft: 16,
-                        fontSize: 14,
-                      }}
-                    >
-                      {module.title}
-                    </p>
-                  </div>
+                  {module.title && (
+                    <div style={{ padding: 24 }}>
+                      <p
+                        style={{
+                          color: '#fff',
+                          fontFamily: 'OpenSans-Bold',
+                          flex: 3,
+                          textAlign: 'left',
+                          marginLeft: 16,
+                          fontSize: 14,
+                        }}
+                      >
+                        {module.title}
+                      </p>
+                    </div>
+                  )}
 
                   {module?.lessons?.map((item, i) => (
                     <ClassContainerButton
