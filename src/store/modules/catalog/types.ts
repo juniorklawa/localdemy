@@ -30,4 +30,5 @@ export interface IVideo {
 export interface IModule {
   title: string;
   lessons: IVideo[];
+  sectionActive: boolean;
 }

@@ -272,6 +272,26 @@ const CoursePage = () => {
     setCurrentCourse(updatedCurrentCourse);
   };
 
+  const handleToggle = (moduleIndex: number) => {
+    const updatedModules = currentCourse.modules.map((item, index) => {
+      if (index === moduleIndex) {
+        return {
+          ...item,
+          sectionActive: !item.sectionActive,
+        };
+      }
+
+      return item;
+    });
+
+    const updatedCourse: ICourse = {
+      ...currentCourse,
+      modules: updatedModules,
+    };
+
+    setCurrentCourse(updatedCourse);
+  };
+
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
@@ -383,92 +403,107 @@ const CoursePage = () => {
                   style={{
                     backgroundColor: '#949494',
                     width: '100%',
-                    margin: 16,
-                    alignItems: 'center',
                     display: 'flex',
                     flexDirection: 'column',
                   }}
                   key={String(module.title)}
                 >
                   {module.title && (
-                    <div style={{ padding: 24 }}>
+                    <div
+                      style={{
+                        padding: 24,
+                        flexDirection: 'row',
+                        display: 'flex',
+                      }}
+                    >
                       <p
                         style={{
                           color: '#fff',
                           fontFamily: 'OpenSans-Bold',
                           flex: 3,
                           textAlign: 'left',
-                          marginLeft: 16,
                           fontSize: 14,
                         }}
                       >
                         {module.title}
                       </p>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggle(moduleIndex)}
+                      >
+                        Toggle
+                      </button>
                     </div>
                   )}
 
-                  {module?.lessons?.map((item, i) => (
-                    <ClassContainerButton
-                      isSelected={
-                        currentIndex === i && currentModuleIndex === moduleIndex
-                      }
-                      type="button"
-                      onClick={() => {
-                        setCurrentIndex(i);
-                        setCurrentModuleIndex(moduleIndex);
-                      }}
-                      key={String(item.path)}
-                    >
-                      {module.lessons[i].isCompleted ? (
-                        <div
-                          style={{
-                            height: 30,
-                            width: 30,
-                            borderRadius: 15,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: '#00C853',
+                  {module.sectionActive && (
+                    <>
+                      {module?.lessons?.map((item, i) => (
+                        <ClassContainerButton
+                          isSelected={
+                            currentIndex === i &&
+                            currentModuleIndex === moduleIndex
+                          }
+                          type="button"
+                          onClick={() => {
+                            setCurrentIndex(i);
+                            setCurrentModuleIndex(moduleIndex);
                           }}
+                          key={String(item.path)}
                         >
-                          <Icon
-                            style={{ height: 15, width: 15 }}
-                            src={check_mark}
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          style={{
-                            height: 30,
-                            width: 30,
-                            borderRadius: 15,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: '#bdbdbd',
-                          }}
-                        >
-                          <Icon
-                            style={{ height: 15, width: 15 }}
-                            src={check_mark}
-                          />
-                        </div>
-                      )}
+                          {module.lessons[i].isCompleted ? (
+                            <div
+                              style={{
+                                height: 30,
+                                width: 30,
+                                borderRadius: 15,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: '#00C853',
+                              }}
+                            >
+                              <Icon
+                                style={{ height: 15, width: 15 }}
+                                src={check_mark}
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                height: 30,
+                                width: 30,
+                                borderRadius: 15,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: '#bdbdbd',
+                              }}
+                            >
+                              <Icon
+                                style={{ height: 15, width: 15 }}
+                                src={check_mark}
+                              />
+                            </div>
+                          )}
 
-                      <p
-                        style={{
-                          color: '#fff',
-                          fontFamily: 'OpenSans-Bold',
-                          flex: 3,
-                          textAlign: 'left',
-                          marginLeft: 16,
-                          fontSize: 14,
-                        }}
-                      >
-                        {item.name}
-                      </p>
-                    </ClassContainerButton>
-                  ))}
+                          <p
+                            style={{
+                              color: '#fff',
+                              fontFamily: 'OpenSans-Bold',
+                              flex: 3,
+                              textAlign: 'left',
+                              marginLeft: 16,
+                              fontSize: 14,
+                            }}
+                          >
+                            {item.name}
+                          </p>
+                        </ClassContainerButton>
+                      ))}
+                    </>
+                  )}
                 </div>
               );
             })}
