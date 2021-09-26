@@ -8,38 +8,31 @@
 - ~Save last index~
 - ~Save video position~
 
-### ~1.1 HomePage Layout~
+### ~1.1~
 
 - ~HomePage Layout~
-
-### ~1.2 Edit Feature~
-
 - ~Edit file and course title name~
 - ~Edit course thumbnail~
 
-### 1.3 CoursePageLayout
+### 1.2
 
-- Course and Edit Layout
+- Module Toggle
+- Module Toggle Layout
 - Show video length is lessons list
 
-### 1.4 Onboarding Features
+### 1.3
+
+- Course and Edit Layout
+
+
+### 1.4
+
+- Finished Course Modal Logic
+- Finished Course Modal Layout
+
+### 1.5
 
 - Filter by type (video and pdf)
 - Manual ordering files
-
-### 1.5 Onboarding Layouts
-
-- Course Onboarding
-
-### 1.6 Finished Course Modal
-
-- Logic
-
-### 1.7 Finished Course Modal
-
-- Layout
-
-### 1.8 Extra Features
-
 - Archive course
 - FTP
