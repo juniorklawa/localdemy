@@ -298,31 +298,26 @@ const CoursePage = () => {
 
   return (
     <Container>
-      <Toolbar>
-        <NavigationContainer>
-          <GoBackButton type="button" onClick={() => history.push('/')}>
-            <Icon src={left_chevron} />
-          </GoBackButton>
-
-          <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
-        </NavigationContainer>
-
-        <OptionsContainer>
-          <OptionButton type="button" onClick={() => setIsModalOpen(true)}>
-            <OptionButtonLabel>Edit</OptionButtonLabel>
-            <Icon src={editing} />
-          </OptionButton>
-
-          <OptionButton type="button" onClick={() => handleDeleteCourse()}>
-            <OptionButtonLabel>Delete</OptionButtonLabel>
-            <Icon src={deleteIcon} />
-          </OptionButton>
-        </OptionsContainer>
-      </Toolbar>
-
       <ContentContainer>
+        <div
+          style={{
+            height: '5%',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            // justifyContent: 'center',
+          }}
+        >
+          <NavigationContainer>
+            <GoBackButton type="button" onClick={() => history.push('/')}>
+              <Icon src={left_chevron} />
+            </GoBackButton>
+
+            <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
+          </NavigationContainer>
+        </div>
         <VideoContainer>
-          <div style={{ minHeight: 810 }}>
+          <div style={{ minHeight: 820 }}>
             <video
               autoPlay={autoPlayEnabled}
               key={
@@ -349,167 +344,192 @@ const CoursePage = () => {
             </video>
           </div>
 
-          <BottomTab>
-            <LessonTitle>
-              {`${
-                currentCourse?.modules[currentModuleIndex].lessons[
-                  currentIndex
-                ].name.split('.mp4')[0]
-              }`}
-            </LessonTitle>
-            <button
-              type="button"
-              onClick={handleGoToNext}
-              style={{
-                padding: 16,
-                color: '#fff',
-                backgroundColor: '#00C853',
-                borderRadius: 10,
-                fontFamily: 'OpenSans-SemiBold',
-              }}
-            >
-              Finish and go to Next
-            </button>
-          </BottomTab>
-        </VideoContainer>
+          <div>
+            <BottomTab>
+              <LessonTitle>
+                {`${
+                  currentCourse?.modules[currentModuleIndex].lessons[
+                    currentIndex
+                  ].name.split('.mp4')[0]
+                }`}
+              </LessonTitle>
+              <button
+                type="button"
+                onClick={handleGoToNext}
+                style={{
+                  color: '#fff',
+                  backgroundColor: '#00C853',
+                  borderRadius: 10,
+                  marginTop: 8,
+                  marginRight: 16,
+                  paddingRight: 16,
+                  paddingLeft: 16,
+                  height: 40,
+                  fontFamily: 'OpenSans-SemiBold',
+                }}
+              >
+                Finish and go to Next
+              </button>
+            </BottomTab>
 
+            <div style={{ padding: 16 }}>
+              <h2>Sobre</h2>
+              <h4>Aulas 130</h4>
+              <h4>Duração 4h:30</h4>
+            </div>
+          </div>
+        </VideoContainer>
+      </ContentContainer>
+
+      <div style={{ backgroundColor: '#14161A', flex: 1 }}>
+        <div
+          style={{
+            height: '5%',
+            alignSelf: 'center',
+            flexDirection: 'row',
+            paddingRight: 16,
+            paddingLeft: 16,
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <OptionButton type="button" onClick={() => setIsModalOpen(true)}>
+            <OptionButtonLabel>Edit</OptionButtonLabel>
+            <Icon src={editing} />
+          </OptionButton>
+
+          <OptionButton type="button" onClick={() => handleDeleteCourse()}>
+            <OptionButtonLabel>Delete</OptionButtonLabel>
+            <Icon src={deleteIcon} />
+          </OptionButton>
+        </div>
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
             width: '100%',
+            backgroundColor: '#191B1F',
           }}
         >
-          <div
-            style={{
-              width: '100%',
-              padding: 16,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              display: 'flex',
-            }}
-          >
-            <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff' }}>
-              {`Progress ${getProgressPercentage()}`}
-            </p>
-          </div>
+          <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff', margin: 16 }}>
+            {`Course content - ${getProgressPercentage()} completed`}
+          </p>
+        </div>
 
-          <ClassesContainer>
-            {currentCourse?.modules?.map((module, moduleIndex) => {
-              return (
-                <div
-                  style={{
-                    backgroundColor: '#949494',
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                  key={String(module.title)}
-                >
-                  {module.title && (
-                    <div
+        <ClassesContainer>
+          {currentCourse?.modules?.map((module, moduleIndex) => {
+            return (
+              <div
+                style={{
+                  backgroundColor: '#21242A',
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+                key={String(module.title)}
+              >
+                {module.title && (
+                  <div
+                    style={{
+                      padding: 24,
+                      flexDirection: 'row',
+                      display: 'flex',
+                    }}
+                  >
+                    <p
                       style={{
-                        padding: 24,
-                        flexDirection: 'row',
-                        display: 'flex',
+                        color: '#fff',
+                        fontFamily: 'OpenSans-Bold',
+                        flex: 3,
+                        textAlign: 'left',
+                        fontSize: 14,
                       }}
                     >
-                      <p
-                        style={{
-                          color: '#fff',
-                          fontFamily: 'OpenSans-Bold',
-                          flex: 3,
-                          textAlign: 'left',
-                          fontSize: 14,
-                        }}
-                      >
-                        {module.title}
-                      </p>
+                      {module.title}
+                    </p>
 
-                      <button
+                    <button
+                      type="button"
+                      onClick={() => handleToggle(moduleIndex)}
+                    >
+                      Toggle
+                    </button>
+                  </div>
+                )}
+
+                {module.sectionActive && (
+                  <>
+                    {module?.lessons?.map((item, i) => (
+                      <ClassContainerButton
+                        isSelected={
+                          currentIndex === i &&
+                          currentModuleIndex === moduleIndex
+                        }
                         type="button"
-                        onClick={() => handleToggle(moduleIndex)}
+                        onClick={() => {
+                          setCurrentIndex(i);
+                          setCurrentModuleIndex(moduleIndex);
+                        }}
+                        key={String(item.path)}
                       >
-                        Toggle
-                      </button>
-                    </div>
-                  )}
-
-                  {module.sectionActive && (
-                    <>
-                      {module?.lessons?.map((item, i) => (
-                        <ClassContainerButton
-                          isSelected={
-                            currentIndex === i &&
-                            currentModuleIndex === moduleIndex
-                          }
-                          type="button"
-                          onClick={() => {
-                            setCurrentIndex(i);
-                            setCurrentModuleIndex(moduleIndex);
-                          }}
-                          key={String(item.path)}
-                        >
-                          {module.lessons[i].isCompleted ? (
-                            <div
-                              style={{
-                                height: 30,
-                                width: 30,
-                                borderRadius: 15,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#00C853',
-                              }}
-                            >
-                              <Icon
-                                style={{ height: 15, width: 15 }}
-                                src={check_mark}
-                              />
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                height: 30,
-                                width: 30,
-                                borderRadius: 15,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#bdbdbd',
-                              }}
-                            >
-                              <Icon
-                                style={{ height: 15, width: 15 }}
-                                src={check_mark}
-                              />
-                            </div>
-                          )}
-
-                          <p
+                        {module.lessons[i].isCompleted ? (
+                          <div
                             style={{
-                              color: '#fff',
-                              fontFamily: 'OpenSans-Bold',
-                              flex: 3,
-                              textAlign: 'left',
-                              marginLeft: 16,
-                              fontSize: 14,
+                              height: 30,
+                              width: 30,
+                              borderRadius: 15,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              backgroundColor: '#00C853',
                             }}
                           >
-                            {item.name}
-                          </p>
-                        </ClassContainerButton>
-                      ))}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </ClassesContainer>
-        </div>
-      </ContentContainer>
+                            <Icon
+                              style={{ height: 15, width: 15 }}
+                              src={check_mark}
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            style={{
+                              height: 30,
+                              width: 30,
+                              borderRadius: 15,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              backgroundColor: '#bdbdbd',
+                            }}
+                          >
+                            <Icon
+                              style={{ height: 15, width: 15 }}
+                              src={check_mark}
+                            />
+                          </div>
+                        )}
+
+                        <p
+                          style={{
+                            color: '#fff',
+                            fontFamily: 'OpenSans-Bold',
+                            flex: 3,
+                            textAlign: 'left',
+                            marginLeft: 16,
+                            fontSize: 14,
+                          }}
+                        >
+                          {item.name}
+                        </p>
+                      </ClassContainerButton>
+                    ))}
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </ClassesContainer>
+      </div>
 
       <StyledModal
         isOpen={modalIsOpen}
@@ -573,7 +593,7 @@ const CoursePage = () => {
                 <input
                   onChange={(e) => handleOnInputModuleNameChange(e, index)}
                   key={String(index)}
-                  style={{ margin: 8, backgroundColor: 'blue' }}
+                  style={{ margin: 8 }}
                   value={module.title}
                 />
                 {currentCourse.modules[index].lessons.map((lesson) => (

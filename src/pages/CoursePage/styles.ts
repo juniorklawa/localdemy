@@ -7,10 +7,13 @@ interface ClassProps {
 
 export const Container = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin: 0px;
   flex: 1;
+  height: 100vh;
   padding: 0px;
+  /* height: 100%; */
+  overflow: hidden;
 `;
 
 export const Toolbar = styled.div`
@@ -30,19 +33,12 @@ export const ClassContainerButton = styled.button<ClassProps>`
   width: 100%;
   justify-content: space-evenly;
   align-items: center;
-  border: 0.1px solid #212121;
 `;
 
 export const NavigationContainer = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-export const OptionsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 10%;
-  justify-content: space-between;
+  margin-left: 8px;
 `;
 
 export const OptionButton = styled.button`
@@ -58,21 +54,20 @@ export const ClassesContainer = styled.div`
   flex-direction: column;
   background-color: #212121;
   width: 100%;
-  height: 100vh;
+  height: 90vh;
   align-items: center;
-  border-width: 3px;
   overflow: auto;
-  border: 1px solid #263238;
 `;
 
 export const VideoContainer = styled.div`
-  width: 75%;
-  height: 100%;
+  width: 100%;
 `;
 
 export const LessonTitle = styled.h2`
   color: #fff;
   font-family: OpenSans-Bold;
+  margin-top: 16px;
+  margin-left: 16px;
 `;
 
 export const BottomTab = styled.div`
@@ -81,20 +76,20 @@ export const BottomTab = styled.div`
   justify-content: space-between;
   align-items: center;
   flex: 1;
-  padding: 16px;
   width: 100%;
 `;
 
 export const ContentContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  flex: 3;
 `;
 
 export const OptionButtonLabel = styled.p`
   margin-right: 8px;
 `;
 
-export const CourseTitle = styled.h2`
+export const CourseTitle = styled.h3`
   color: #fff;
   font-family: OpenSans-ExtraBold;
   margin-left: 8px;

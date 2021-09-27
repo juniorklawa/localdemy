@@ -157,7 +157,11 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     // localStorage.clear();
     // localStorage.removeItem('loglevel:webpack-dev-server');
-    handleStoragedCourses();
+    try {
+      handleStoragedCourses();
+    } catch (err) {
+      console.log(err);
+    }
   }, [handleStoragedCourses]);
 
   return (
