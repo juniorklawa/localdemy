@@ -136,7 +136,9 @@ const HomePage: React.FC = () => {
         });
 
         const updatedLoadedCourse: ICourse = {
-          modules: courseModules,
+          modules: courseModules.sort((a, b) => {
+            return naturalSorting(a.title, b.title);
+          }),
           courseTitle: folderName as string,
 
           id: courseId,

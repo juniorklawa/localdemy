@@ -4,7 +4,7 @@
 
 - Weird behavior when clicking on checkbox
 - Large thumbnail image height
-- Sorting modules
+- ~Sorting modules~
 
 ### ~1.0 General Features~
 
@@ -39,6 +39,7 @@
 ### 1.5
 
 - Scroll to where lastIndex is
+- 2x video player
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)
 - Filter by type (video and pdf)
