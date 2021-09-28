@@ -31,7 +31,7 @@
 
 
 ### 1.5
-
+- Scroll to where lastIndex is
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)
 - Filter by type (video and pdf)
