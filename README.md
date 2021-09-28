@@ -11,7 +11,6 @@
 
 - ~Finish and go to next~
 - ~PDF Viewer and Access~
-- ~Auto play~
 - ~Save last index~
 - ~Save video position~
 
@@ -38,9 +37,10 @@
 - Finished Course Modal Layout
 
 ### 1.5
-
+- Icon
 - Scroll to where lastIndex is
 - 2x video player
+- Auto play
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)
 - Filter by type (video and pdf)
