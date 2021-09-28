@@ -16,23 +16,41 @@ export const Container = styled.div`
   overflow: hidden;
 `;
 
+export const ModuleContainerButton = styled.button`
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border-top: 0.5px solid #12181b;
+  border-bottom: 0.5px solid #12181b;
+`;
+
 export const Toolbar = styled.div`
   display: flex;
-  flex-direction: row;
   background-color: #263238;
   align-items: center;
   padding: 16px;
+  flex: row;
   justify-content: space-between;
 `;
 
-export const ClassContainerButton = styled.button<ClassProps>`
-  max-height: 70px;
-  padding: 16px;
-  background-color: ${({ isSelected }) => (isSelected ? '#454E55' : '#2A2E35')};
+export const ClassSubContainerButton = styled.button`
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   display: flex;
+  flex-direction: column;
   width: 100%;
-  justify-content: space-evenly;
+`;
+
+export const ClassContainerButton = styled.button<ClassProps>`
+  min-height: 70px;
+  padding: 16px;
   align-items: center;
+  background-color: ${({ isSelected }) => (isSelected ? '#414648' : '#292F31')};
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 `;
 
 export const NavigationContainer = styled.div`
@@ -52,7 +70,7 @@ export const OptionButton = styled.button`
 export const ClassesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #212121;
+  background-color: #0e1315;
   width: 100%;
   height: 90vh;
   align-items: center;
@@ -111,6 +129,17 @@ export const Icon = styled.img`
   &:hover {
     transform: scale(1.1);
   }
+`;
+
+export const PlayIcon = styled.img`
+  opacity: 0.5;
+  width: 12px;
+  height: 12px;
+`;
+
+export const ToggleIcon = styled.img`
+  width: 18;
+  height: 18px;
 `;
 
 export const StyledModal = styled(ReactModal)`

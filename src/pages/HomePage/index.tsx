@@ -1,5 +1,5 @@
 import path from 'path';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,6 +20,7 @@ import {
   EmptyListContainer,
   EmptyListLabel,
   InfoContainer,
+  LoadingLabel,
   ProgressLabel,
   Shrug,
   Thumbnail,
@@ -40,25 +41,48 @@ const HomePage: React.FC = () => {
   );
 
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getVideoDuration = async (file: IVideo) => {
+    return new Promise((resolve) => {
+      if (file?.type === 'video/mp4' && file.path) {
+        const video = document.createElement('video');
+
+        video.setAttribute('src', file?.path);
+
+        video.onloadedmetadata = () => {
+          resolve(video.duration);
+        };
+      } else {
+        resolve(null);
+      }
+    });
+  };
 
   const SelectCourseFolder = () => {
     const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFileUpload = (e: any) => {
+    const handleFileUpload = async (e: any) => {
+      setIsLoading(true);
       const { files } = e.target;
       if (files && files.length) {
         const formattedFiles: IVideo[] = [];
-        files.forEach((file: IVideo) => {
+
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const file of files) {
           const fileName = file.path.substring(file.path.lastIndexOf('/') + 1);
-          const formattedFile = {
+          const formattedFile: IVideo = {
             name: fileName.replace(/\.[^/.]+$/, ''),
             path: file.path,
             type: file.type,
+            duration: (await getVideoDuration(file)) as number,
           };
 
+          console.log(formattedFile);
+
           formattedFiles.push(formattedFile);
-        });
+        }
         const folderName = path
           .dirname(formattedFiles[0].path)
           .split(path.sep)
@@ -118,6 +142,7 @@ const HomePage: React.FC = () => {
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
         };
+        setIsLoading(false);
 
         dispatch(addNewCourse(updatedLoadedCourse));
       }
@@ -156,13 +181,21 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     // localStorage.clear();
-    // localStorage.removeItem('loglevel:webpack-dev-server');
+    localStorage.removeItem('loglevel:webpack-dev-server');
     try {
       handleStoragedCourses();
     } catch (err) {
       console.log(err);
     }
   }, [handleStoragedCourses]);
+
+  if (isLoading) {
+    return (
+      <EmptyListContainer>
+        <LoadingLabel>Loading...</LoadingLabel>
+      </EmptyListContainer>
+    );
+  }
 
   return (
     <Container>

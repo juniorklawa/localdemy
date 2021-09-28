@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import check_mark from '../../check-mark.png';
+import Checkbox from 'react-simple-checkbox';
 import deleteIcon from '../../delete.png';
+import down_chevron from '../../down-chevron.png';
+import play_button from '../../play-button.png';
 import editing from '../../editing.png';
 import left_chevron from '../../left-chevron.png';
 import { IState } from '../../store';
@@ -11,23 +13,26 @@ import {
   updateCourse,
 } from '../../store/modules/catalog/actions';
 import { ICourse } from '../../store/modules/catalog/types';
+import up_chevron from '../../up-chevron.png';
 import { AddCourseButton } from '../HomePage/styles';
 import {
   BottomTab,
   ClassContainerButton,
   ClassesContainer,
+  ClassSubContainerButton,
   Container,
   ContentContainer,
   CourseTitle,
   GoBackButton,
   Icon,
   LessonTitle,
+  ModuleContainerButton,
   NavigationContainer,
   OptionButton,
   OptionButtonLabel,
-  OptionsContainer,
+  PlayIcon,
   StyledModal,
-  Toolbar,
+  ToggleIcon,
   VideoContainer,
 } from './styles';
 
@@ -80,10 +85,10 @@ const CoursePage = () => {
     async function fetchData() {
       try {
         setIsLoading(true);
+        console.log('salve', selectedCourse);
 
-        // if (selectedCourse.lastIndex) {
-        //   setCurrentIndex(selectedCourse.lastIndex);
-        // }
+        setCurrentIndex(selectedCourse.lastIndex || 0);
+        setCurrentModuleIndex(selectedCourse.lastModuleIndex || 0);
 
         if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
@@ -98,7 +103,7 @@ const CoursePage = () => {
     }
 
     fetchData();
-  }, [id, selectedCourse]);
+  }, [id]);
 
   const handleGoToNextLesson = () => {
     if (
@@ -119,14 +124,20 @@ const CoursePage = () => {
     return setCurrentModuleIndex((prevState) => prevState + 1);
   };
 
-  const markLessonAsCompleted = async (lessonIndex: number) => {
+  const handleCheckLesson = async (
+    lessonIndex: number,
+    alwaysAstrue = false
+  ) => {
     const updatedCurrentCourseLessons = currentCourse.modules[
       currentModuleIndex
     ].lessons.map((lesson, index) => {
       if (index === lessonIndex) {
         return {
           ...lesson,
-          isCompleted: true,
+          isCompleted: alwaysAstrue
+            ? true
+            : !currentCourse.modules[currentModuleIndex].lessons[lessonIndex]
+                .isCompleted,
           lastPosition: 0,
         };
       }
@@ -147,6 +158,7 @@ const CoursePage = () => {
         return module;
       }),
       lastIndex: currentIndex,
+      lastModuleIndex: currentModuleIndex,
     };
 
     setCurrentCourse(updatedCurrentCourse);
@@ -154,7 +166,7 @@ const CoursePage = () => {
   };
 
   const handleGoToNext = () => {
-    markLessonAsCompleted(currentIndex);
+    handleCheckLesson(currentIndex, true);
     handleGoToNextLesson();
   };
 
@@ -192,6 +204,7 @@ const CoursePage = () => {
         return module;
       }),
       lastIndex: currentIndex,
+      lastModuleIndex: currentModuleIndex,
     };
 
     setCurrentCourse(updatedCurrentCourse);
@@ -216,6 +229,7 @@ const CoursePage = () => {
       ...currentCourse,
       modules: updatedCurrentCourseModule,
       lastIndex: currentIndex,
+      lastModuleIndex: currentModuleIndex,
     };
 
     setCurrentCourse(updatedCurrentCourse);
@@ -254,6 +268,7 @@ const CoursePage = () => {
       ...currentCourse,
       modules: updatedModules,
       lastIndex: currentIndex,
+      lastModuleIndex: currentModuleIndex,
     };
 
     setCurrentCourse(updatedCurrentCourse);
@@ -292,6 +307,16 @@ const CoursePage = () => {
     setCurrentCourse(updatedCourse);
   };
 
+  function secondsToHms(d: any) {
+    d = Number(d);
+    const h = Math.floor(d / 3600);
+    const m = Math.floor((d % 3600) / 60);
+
+    const hDisplay = h > 0 ? `${h}h ` : '';
+    const mDisplay = m > 0 ? `${m}m` : '';
+    return hDisplay + mDisplay;
+  }
+
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
@@ -326,7 +351,7 @@ const CoursePage = () => {
               }
               width="100%"
               onPause={(e) => saveLastPosition(e)}
-              onEnded={() => markLessonAsCompleted(currentIndex)}
+              onEnded={() => handleCheckLesson(currentIndex, true)}
               controls
             >
               <source
@@ -364,7 +389,7 @@ const CoursePage = () => {
                   marginRight: 16,
                   paddingRight: 16,
                   paddingLeft: 16,
-                  height: 40,
+                  height: 50,
                   fontFamily: 'OpenSans-SemiBold',
                 }}
               >
@@ -372,16 +397,52 @@ const CoursePage = () => {
               </button>
             </BottomTab>
 
-            <div style={{ padding: 16 }}>
-              <h2>Sobre</h2>
-              <h4>Aulas 130</h4>
-              <h4>Duração 4h:30</h4>
+            <div style={{ marginTop: 4, marginLeft: 16 }}>
+              <h3
+                style={{
+                  fontFamily: 'OpenSans-Bold',
+                  color: '#BDBDBD',
+                  marginTop: 12,
+                }}
+              >
+                About this course
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'OpenSans-Regular',
+                  color: '#BDBDBD',
+                  marginTop: 8,
+                  fontSize: 12,
+                }}
+              >
+                {`Classes: ${currentCourse.modules.reduce((acc, item) => {
+                  return acc + item.lessons.length;
+                }, 0)}`}
+              </p>
+              <p
+                style={{
+                  fontFamily: 'OpenSans-Regular',
+                  color: '#BDBDBD',
+                  marginTop: 2,
+                  fontSize: 12,
+                }}
+              >
+                {`Duration: ${secondsToHms(
+                  currentCourse.modules.reduce((acc, item) => {
+                    return (
+                      acc +
+                      item.lessons.reduce((lAcc, lItem) => {
+                        return acc + lItem.duration;
+                      }, 0)
+                    );
+                  }, 0)
+                )}`}
+              </p>
             </div>
           </div>
         </VideoContainer>
       </ContentContainer>
-
-      <div style={{ backgroundColor: '#14161A', flex: 1 }}>
+      <div style={{ backgroundColor: '#0E1315', flex: 1 }}>
         <div
           style={{
             height: '5%',
@@ -409,7 +470,7 @@ const CoursePage = () => {
             flexDirection: 'column',
             flex: 1,
             width: '100%',
-            backgroundColor: '#191B1F',
+            backgroundColor: '#12181b',
           }}
         >
           <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff', margin: 16 }}>
@@ -422,7 +483,6 @@ const CoursePage = () => {
             return (
               <div
                 style={{
-                  backgroundColor: '#21242A',
                   width: '100%',
                   display: 'flex',
                   flexDirection: 'column',
@@ -430,32 +490,62 @@ const CoursePage = () => {
                 key={String(module.title)}
               >
                 {module.title && (
-                  <div
-                    style={{
-                      padding: 24,
-                      flexDirection: 'row',
-                      display: 'flex',
-                    }}
+                  <ModuleContainerButton
+                    type="button"
+                    onClick={() => handleToggle(moduleIndex)}
                   >
+                    <div
+                      style={{
+                        flexDirection: 'row',
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <p
+                        style={{
+                          color: '#fff',
+                          fontFamily: 'OpenSans-Bold',
+                          flex: 3,
+                          textAlign: 'left',
+                          fontSize: 16,
+                        }}
+                      >
+                        {module.title}
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggle(moduleIndex)}
+                      >
+                        {module.sectionActive ? (
+                          <ToggleIcon src={up_chevron} />
+                        ) : (
+                          <ToggleIcon src={down_chevron} />
+                        )}
+                      </button>
+                    </div>
+
                     <p
                       style={{
-                        color: '#fff',
-                        fontFamily: 'OpenSans-Bold',
+                        marginTop: 4,
+                        color: '#E0E0E0',
+                        fontFamily: 'OpenSans-Regular',
                         flex: 3,
                         textAlign: 'left',
                         fontSize: 14,
                       }}
                     >
-                      {module.title}
+                      {`${
+                        module.lessons.filter((lesson) => lesson.isCompleted)
+                          .length
+                      }/${module.lessons.length} | ${secondsToHms(
+                        module.lessons.reduce((acc, item) => {
+                          return (acc + item.duration) as number;
+                        }, 0)
+                      )}`}
                     </p>
-
-                    <button
-                      type="button"
-                      onClick={() => handleToggle(moduleIndex)}
-                    >
-                      Toggle
-                    </button>
-                  </div>
+                  </ModuleContainerButton>
                 )}
 
                 {module.sectionActive && (
@@ -473,54 +563,53 @@ const CoursePage = () => {
                         }}
                         key={String(item.path)}
                       >
-                        {module.lessons[i].isCompleted ? (
-                          <div
+                        <div style={{ marginTop: -16 }}>
+                          <Checkbox
+                            color="#00C853"
+                            size={2}
+                            onChange={() => handleCheckLesson(i)}
+                            tickAnimationDuration={100}
+                            backAnimationDuration={200}
+                            delay={0}
+                            checked={module.lessons[i].isCompleted}
+                          />
+                        </div>
+                        <ClassSubContainerButton>
+                          <p
                             style={{
-                              height: 30,
-                              width: 30,
-                              borderRadius: 15,
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: '#00C853',
+                              color: '#fff',
+                              fontFamily: 'OpenSans-Regular',
+                              flex: 3,
+                              textAlign: 'left',
+                              marginLeft: 0,
+                              fontSize: 14,
                             }}
                           >
-                            <Icon
-                              style={{ height: 15, width: 15 }}
-                              src={check_mark}
-                            />
-                          </div>
-                        ) : (
+                            {item.name}
+                          </p>
                           <div
                             style={{
-                              height: 30,
-                              width: 30,
-                              borderRadius: 15,
                               display: 'flex',
-                              justifyContent: 'center',
+                              flexDirection: 'row',
                               alignItems: 'center',
-                              backgroundColor: '#bdbdbd',
                             }}
                           >
-                            <Icon
-                              style={{ height: 15, width: 15 }}
-                              src={check_mark}
-                            />
-                          </div>
-                        )}
+                            <PlayIcon src={play_button} />
 
-                        <p
-                          style={{
-                            color: '#fff',
-                            fontFamily: 'OpenSans-Bold',
-                            flex: 3,
-                            textAlign: 'left',
-                            marginLeft: 16,
-                            fontSize: 14,
-                          }}
-                        >
-                          {item.name}
-                        </p>
+                            <p
+                              style={{
+                                color: '#e0e0e0',
+                                fontFamily: 'OpenSans-Regular',
+                                flex: 3,
+                                textAlign: 'left',
+                                marginLeft: 4,
+                                fontSize: 12,
+                              }}
+                            >
+                              {secondsToHms(item.duration)}
+                            </p>
+                          </div>
+                        </ClassSubContainerButton>
                       </ClassContainerButton>
                     ))}
                   </>

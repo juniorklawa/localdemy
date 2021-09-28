@@ -16,6 +16,7 @@ export interface ICourse {
   isCompleted?: boolean;
   courseThumbnail: string;
   lastIndex?: number;
+  lastModuleIndex?: number;
   autoPlayEnabled?: boolean;
 }
 
@@ -24,6 +25,7 @@ export interface IVideo {
   path: string;
   type: string;
   isCompleted?: boolean;
+  duration?: number | null;
   lastPosition?: number;
 }
 

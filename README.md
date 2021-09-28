@@ -16,22 +16,24 @@
 
 ### 1.2
 
-- Module Toggle
-- Module Toggle Layout
-- Show video length is lessons list
+- ~Module Toggle~
+- ~Module Toggle Layout~
+- ~Show video length is lessons list~
 
 ### 1.3
-
 - Course and Edit Layout
-
+- Delete course confirmation
 
 ### 1.4
 
 - Finished Course Modal Logic
 - Finished Course Modal Layout
 
+
 ### 1.5
 
+- Course onboarding
+- Access resource (pdf, text, spreadsheet)
 - Filter by type (video and pdf)
 - Manual ordering files
 - Archive course
