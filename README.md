@@ -1,5 +1,11 @@
 ## Localdemy
 
+### BUGS
+
+- Weird behavior when clicking on checkbox
+- Large thumbnail image height
+- Sorting modules
+
 ### ~1.0 General Features~
 
 - ~Finish and go to next~
@@ -21,6 +27,7 @@
 - ~Show video length is lessons list~
 
 ### 1.3
+
 - Course and Edit Layout
 - Delete course confirmation
 
@@ -29,8 +36,8 @@
 - Finished Course Modal Logic
 - Finished Course Modal Layout
 
-
 ### 1.5
+
 - Scroll to where lastIndex is
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)
