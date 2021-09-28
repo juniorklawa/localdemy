@@ -4,6 +4,7 @@
 
 - Weird behavior when clicking on checkbox
 - Large thumbnail image height
+- Video duration bug
 - ~Sorting modules~
 
 ### ~1.0 General Features~
