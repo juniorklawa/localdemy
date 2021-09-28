@@ -83,6 +83,12 @@ export const EmptyListLabel = styled.p`
   color: #757575;
 `;
 
+export const LoadingLabel = styled.h1`
+  align-self: center;
+  font-family: OpenSans-Bold;
+  color: #fff;
+`;
+
 export const EmptyListContainer = styled.div`
   display: flex;
   justify-content: center;
