@@ -1,12 +1,13 @@
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Checkbox from 'react-simple-checkbox';
 import deleteIcon from '../../delete.png';
 import down_chevron from '../../down-chevron.png';
-import play_button from '../../play-button.png';
 import editing from '../../editing.png';
 import left_chevron from '../../left-chevron.png';
+import play_button from '../../play-button.png';
 import { IState } from '../../store';
 import {
   deleteCourse,
@@ -177,6 +178,28 @@ const CoursePage = () => {
     history.push('/');
   };
 
+  const sumDuration = () => {
+    let seconds = 0;
+
+    currentCourse.modules.forEach((module) => {
+      module.lessons.forEach((lesson) => {
+        seconds += Math.floor(lesson.duration as number);
+      });
+    });
+
+    const duration = moment.duration(seconds / 60, 'minutes');
+
+    const hh =
+      duration.years() * (365 * 24) +
+      duration.months() * (30 * 24) +
+      duration.days() * 24 +
+      duration.hours();
+
+    const mm = duration.minutes();
+
+    return `${hh}h ${mm}m`;
+  };
+
   const saveLastPosition = async (e: any) => {
     const updatedCurrentCourseLessons = currentCourse.modules[
       currentModuleIndex
@@ -307,14 +330,8 @@ const CoursePage = () => {
     setCurrentCourse(updatedCourse);
   };
 
-  function secondsToHms(d: any) {
-    d = Number(d);
-    const h = Math.floor(d / 3600);
-    const m = Math.floor((d % 3600) / 60);
-
-    const hDisplay = h > 0 ? `${h}h ` : '';
-    const mDisplay = m > 0 ? `${m}m` : '';
-    return `${hDisplay}${mDisplay}`;
+  function secondsToHms(secs: any) {
+    return moment.utc(secs * 1000).format('HH:mm:ss');
   }
 
   if (isLoading) {
@@ -419,6 +436,7 @@ const CoursePage = () => {
                   return acc + item.lessons.length;
                 }, 0)}`}
               </p>
+
               <p
                 style={{
                   fontFamily: 'OpenSans-Regular',
@@ -427,16 +445,7 @@ const CoursePage = () => {
                   fontSize: 12,
                 }}
               >
-                {`Duration: ${secondsToHms(
-                  currentCourse.modules.reduce((acc, item) => {
-                    return (
-                      acc +
-                      item.lessons.reduce((lAcc, lItem) => {
-                        return acc + lItem.duration;
-                      }, 0)
-                    );
-                  }, 0)
-                )}`}
+                {`Duration: ${sumDuration()}`}
               </p>
             </div>
           </div>
