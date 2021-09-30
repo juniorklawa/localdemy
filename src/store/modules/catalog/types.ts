@@ -18,6 +18,7 @@ export interface ICourse {
   lastIndex?: number;
   lastModuleIndex?: number;
   autoPlayEnabled?: boolean;
+  videoSpeed: number;
 }
 
 export interface IVideo {

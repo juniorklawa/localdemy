@@ -143,6 +143,7 @@ const HomePage: React.FC = () => {
 
           id: courseId,
           courseThumbnail: thumbnailFile?.path as string,
+          videoSpeed: 1,
         };
         setIsLoading(false);
 

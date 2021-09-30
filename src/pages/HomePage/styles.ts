@@ -64,7 +64,6 @@ export const CourseContainer = styled.button`
 
 export const Thumbnail = styled.img`
   width: 90%;
-  padding-horizontal: 16px;
   padding-top: 16px;
   align-self: center;
   object-fit: contain;

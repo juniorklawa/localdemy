@@ -1,12 +1,5 @@
 ## Localdemy
 
-### BUGS
-
-- Weird behavior when clicking on checkbox
-- Large thumbnail image height
-- Video duration bug
-- ~Sorting modules~
-
 ### ~1.0 General Features~
 
 - ~Finish and go to next~
@@ -28,8 +21,9 @@
 
 ### 1.3
 
+- ~2x video player~
 - Course and Edit Layout
-- Delete course confirmation
+- Delete course modal confirmation
 
 ### 1.4
 
@@ -37,9 +31,13 @@
 - Finished Course Modal Layout
 
 ### 1.5
+
+- Refac compoenents
+
+### 1.6
+
 - Icon
 - Scroll to where lastIndex is
-- 2x video player
 - Auto play
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)

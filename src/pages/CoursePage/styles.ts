@@ -1,7 +1,11 @@
-import styled from 'styled-components';
 import ReactModal from 'react-modal';
+import styled from 'styled-components';
 
 interface ClassProps {
+  isSelected: boolean;
+}
+
+interface VideoButtonSpeedProps {
   isSelected: boolean;
 }
 
@@ -14,6 +18,19 @@ export const Container = styled.div`
   padding: 0px;
   /* height: 100%; */
   overflow: hidden;
+`;
+
+export const VideoButtonSpeed = styled.button<VideoButtonSpeedProps>`
+  color: ${({ isSelected }) => (isSelected ? '#fff' : '#888B8D')};
+  background-color: ${({ isSelected }) => (isSelected ? '#00c853' : '#292F31')};
+  width: 80px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-right: 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: OpenSans-SemiBold;
 `;
 
 export const ModuleContainerButton = styled.button`
@@ -56,6 +73,9 @@ export const ClassContainerButton = styled.button<ClassProps>`
 export const NavigationContainer = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
   margin-left: 8px;
 `;
 

@@ -34,6 +34,7 @@ import {
   PlayIcon,
   StyledModal,
   ToggleIcon,
+  VideoButtonSpeed,
   VideoContainer,
 } from './styles';
 
@@ -45,13 +46,14 @@ const CoursePage = () => {
   const [currentCourse, setCurrentCourse] = useState<ICourse>({} as ICourse);
   const { id } = useParams<IRouteParams>();
   const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
-
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
   const dispatch = useDispatch();
   const [modalIsOpen, setIsModalOpen] = useState(false);
+  const videoRef = useRef();
 
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
@@ -86,10 +88,10 @@ const CoursePage = () => {
     async function fetchData() {
       try {
         setIsLoading(true);
-        console.log('salve', selectedCourse);
 
         setCurrentIndex(selectedCourse.lastIndex || 0);
         setCurrentModuleIndex(selectedCourse.lastModuleIndex || 0);
+        setPlaybackRate(selectedCourse.videoSpeed || 1);
 
         if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
@@ -125,19 +127,33 @@ const CoursePage = () => {
     return setCurrentModuleIndex((prevState) => prevState + 1);
   };
 
+  const handleChangeVideoSpeed = (videoSpeed: number) => {
+    setPlaybackRate(videoSpeed);
+    videoRef.current.playbackRate = videoSpeed;
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      videoSpeed,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+    dispatch(updateCourse(updatedCurrentCourse));
+  };
+
   const handleCheckLesson = async (
     lessonIndex: number,
-    alwaysAstrue = false
+    alwaysAstrue = false,
+    moduleIndex: number
   ) => {
     const updatedCurrentCourseLessons = currentCourse.modules[
-      currentModuleIndex
+      moduleIndex
     ].lessons.map((lesson, index) => {
       if (index === lessonIndex) {
         return {
           ...lesson,
           isCompleted: alwaysAstrue
             ? true
-            : !currentCourse.modules[currentModuleIndex].lessons[lessonIndex]
+            : !currentCourse.modules[moduleIndex].lessons[lessonIndex]
                 .isCompleted,
           lastPosition: 0,
         };
@@ -149,7 +165,7 @@ const CoursePage = () => {
     const updatedCurrentCourse: ICourse = {
       ...currentCourse,
       modules: currentCourse.modules.map((module, index) => {
-        if (index === currentModuleIndex) {
+        if (index === moduleIndex) {
           return {
             ...module,
             lessons: updatedCurrentCourseLessons,
@@ -167,7 +183,7 @@ const CoursePage = () => {
   };
 
   const handleGoToNext = () => {
-    handleCheckLesson(currentIndex, true);
+    handleCheckLesson(currentIndex, true, currentModuleIndex);
     handleGoToNextLesson();
   };
 
@@ -187,17 +203,7 @@ const CoursePage = () => {
       });
     });
 
-    const duration = moment.duration(seconds / 60, 'minutes');
-
-    const hh =
-      duration.years() * (365 * 24) +
-      duration.months() * (30 * 24) +
-      duration.days() * 24 +
-      duration.hours();
-
-    const mm = duration.minutes();
-
-    return `${hh}h ${mm}m`;
+    return secondsToHms(seconds);
   };
 
   const saveLastPosition = async (e: any) => {
@@ -330,8 +336,20 @@ const CoursePage = () => {
     setCurrentCourse(updatedCourse);
   };
 
-  function secondsToHms(secs: any) {
-    return moment.utc(secs * 1000).format('HH:mm:ss');
+  function secondsToHms(seconds: any) {
+    const duration = moment.duration(seconds / 60, 'minutes');
+
+    const hh =
+      duration.years() * (365 * 24) +
+      duration.months() * (30 * 24) +
+      duration.days() * 24 +
+      duration.hours();
+
+    const mm = duration.minutes();
+
+    const hours = hh > 0 ? `${hh}h` : ``;
+
+    return `${hours} ${mm}m`;
   }
 
   if (isLoading) {
@@ -351,16 +369,62 @@ const CoursePage = () => {
           }}
         >
           <NavigationContainer>
-            <GoBackButton type="button" onClick={() => history.push('/')}>
-              <Icon src={left_chevron} />
-            </GoBackButton>
+            <div style={{ flexDirection: 'row', display: 'flex' }}>
+              <GoBackButton type="button" onClick={() => history.push('/')}>
+                <Icon src={left_chevron} />
+              </GoBackButton>
 
-            <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
+              <CourseTitle>{currentCourse?.courseTitle}</CourseTitle>
+            </div>
+
+            <div
+              style={{
+                flexDirection: 'row',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <VideoButtonSpeed
+                type="button"
+                isSelected={playbackRate === 0.5}
+                onClick={() => handleChangeVideoSpeed(0.5)}
+              >
+                0.5x
+              </VideoButtonSpeed>
+
+              <VideoButtonSpeed
+                isSelected={playbackRate === 1}
+                type="button"
+                onClick={() => handleChangeVideoSpeed(1)}
+              >
+                1x
+              </VideoButtonSpeed>
+
+              <VideoButtonSpeed
+                type="button"
+                isSelected={playbackRate === 1.5}
+                onClick={() => handleChangeVideoSpeed(1.5)}
+              >
+                1.5x
+              </VideoButtonSpeed>
+
+              <VideoButtonSpeed
+                type="button"
+                isSelected={playbackRate === 2}
+                onClick={() => handleChangeVideoSpeed(2)}
+              >
+                2x
+              </VideoButtonSpeed>
+            </div>
           </NavigationContainer>
         </div>
         <VideoContainer>
           <div style={{ minHeight: 820 }}>
             <video
+              ref={videoRef}
+              onLoadedData={() => {
+                videoRef.current.playbackRate = playbackRate;
+              }}
               autoPlay={autoPlayEnabled}
               key={
                 currentCourse.modules[currentModuleIndex].lessons[currentIndex]
@@ -368,7 +432,9 @@ const CoursePage = () => {
               }
               width="100%"
               onPause={(e) => saveLastPosition(e)}
-              onEnded={() => handleCheckLesson(currentIndex, true)}
+              onEnded={() =>
+                handleCheckLesson(currentIndex, true, currentModuleIndex)
+              }
               controls
             >
               <source
@@ -576,7 +642,9 @@ const CoursePage = () => {
                           <Checkbox
                             color="#00C853"
                             size={2}
-                            onChange={() => handleCheckLesson(i)}
+                            onChange={() =>
+                              handleCheckLesson(i, false, moduleIndex)
+                            }
                             tickAnimationDuration={100}
                             backAnimationDuration={200}
                             delay={0}
