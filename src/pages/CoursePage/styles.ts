@@ -104,7 +104,7 @@ export const VideoContainer = styled.div`
 export const LessonTitle = styled.h2`
   color: #fff;
   font-family: OpenSans-Bold;
-  margin-top: 16px;
+  margin-top: 8px;
   margin-left: 16px;
 `;
 
@@ -169,6 +169,7 @@ export const StyledModal = styled(ReactModal)`
   bottom: 0;
   left: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);

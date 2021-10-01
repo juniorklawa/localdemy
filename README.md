@@ -13,17 +13,17 @@
 - ~Edit file and course title name~
 - ~Edit course thumbnail~
 
-### 1.2
+### ~1.2~
 
 - ~Module Toggle~
 - ~Module Toggle Layout~
 - ~Show video length is lessons list~
 
-### 1.3
+### ~1.3~
 
 - ~2x video player~
-- Course and Edit Layout
-- Delete course modal confirmation
+- ~Course and Edit Layout~
+- ~Delete course modal confirmation~
 
 ### 1.4
 
@@ -32,16 +32,16 @@
 
 ### 1.5
 
-- Refac compoenents
+- All in english
+- Refac compoenents and fix ts and eslint errors
 
 ### 1.6
 
-- Icon
+- Archive course
 - Scroll to where lastIndex is
 - Auto play
+- Icon
 - Course onboarding
 - Access resource (pdf, text, spreadsheet)
 - Filter by type (video and pdf)
 - Manual ordering files
-- Archive course
-- FTP

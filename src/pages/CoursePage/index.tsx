@@ -1,3 +1,4 @@
+import { dialog } from 'electron';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +16,7 @@ import {
 } from '../../store/modules/catalog/actions';
 import { ICourse } from '../../store/modules/catalog/types';
 import up_chevron from '../../up-chevron.png';
-import { AddCourseButton } from '../HomePage/styles';
+import close from '../../close.png';
 import {
   BottomTab,
   ClassContainerButton,
@@ -44,6 +45,9 @@ interface IRouteParams {
 
 const CoursePage = () => {
   const [currentCourse, setCurrentCourse] = useState<ICourse>({} as ICourse);
+  const [currentEditCourse, setCurrentEditCourse] = useState<ICourse>(
+    {} as ICourse
+  );
   const { id } = useParams<IRouteParams>();
   const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -190,8 +194,26 @@ const CoursePage = () => {
   const history = useHistory();
 
   const handleDeleteCourse = () => {
-    dispatch(deleteCourse(currentCourse));
-    history.push('/');
+    if (confirm('Are you sure you want to delete this course?')) {
+      dispatch(deleteCourse(currentCourse));
+      history.push('/');
+    }
+  };
+
+  const secondsToHms = (seconds: number) => {
+    const duration = moment.duration(seconds / 60, 'minutes');
+
+    const hh =
+      duration.years() * (365 * 24) +
+      duration.months() * (30 * 24) +
+      duration.days() * 24 +
+      duration.hours();
+
+    const mm = duration.minutes();
+
+    const hours = hh > 0 ? `${hh}h` : ``;
+
+    return `${hours} ${mm}m`;
   };
 
   const sumDuration = () => {
@@ -241,7 +263,7 @@ const CoursePage = () => {
   };
 
   const handleOnInputModuleNameChange = async (e: any, moduleIndex: number) => {
-    const updatedCurrentCourseModule = currentCourse.modules.map(
+    const updatedCurrentCourseModule = currentEditCourse.modules.map(
       (item, index) => {
         if (index === moduleIndex) {
           return {
@@ -255,13 +277,14 @@ const CoursePage = () => {
     );
 
     const updatedCurrentCourse: ICourse = {
-      ...currentCourse,
+      ...currentEditCourse,
       modules: updatedCurrentCourseModule,
       lastIndex: currentIndex,
       lastModuleIndex: currentModuleIndex,
     };
 
-    setCurrentCourse(updatedCurrentCourse);
+    setCurrentEditCourse(updatedCurrentCourse);
+    // setCurrentCourse(updatedCurrentCourse);
   };
 
   const handleOnInputLessonNameChange = async (
@@ -269,7 +292,7 @@ const CoursePage = () => {
     lessonPath: string,
     moduleIndex: number
   ) => {
-    const updatedCurrentCourseLessons = currentCourse.modules[
+    const updatedCurrentCourseLessons = currentEditCourse.modules[
       moduleIndex
     ].lessons.map((lesson) => {
       if (lesson.path === lessonPath) {
@@ -282,7 +305,7 @@ const CoursePage = () => {
       return lesson;
     });
 
-    const updatedModules = currentCourse.modules.map((module, index) => {
+    const updatedModules = currentEditCourse.modules.map((module, index) => {
       if (index === moduleIndex) {
         return {
           ...module,
@@ -294,13 +317,13 @@ const CoursePage = () => {
     });
 
     const updatedCurrentCourse: ICourse = {
-      ...currentCourse,
+      ...currentEditCourse,
       modules: updatedModules,
       lastIndex: currentIndex,
       lastModuleIndex: currentModuleIndex,
     };
-
-    setCurrentCourse(updatedCurrentCourse);
+    setCurrentEditCourse(updatedCurrentCourse);
+    // setCurrentCourse(updatedCurrentCourse);
   };
 
   const onButtonClick = () => {
@@ -336,24 +359,23 @@ const CoursePage = () => {
     setCurrentCourse(updatedCourse);
   };
 
-  function secondsToHms(seconds: any) {
-    const duration = moment.duration(seconds / 60, 'minutes');
-
-    const hh =
-      duration.years() * (365 * 24) +
-      duration.months() * (30 * 24) +
-      duration.days() * 24 +
-      duration.hours();
-
-    const mm = duration.minutes();
-
-    const hours = hh > 0 ? `${hh}h` : ``;
-
-    return `${hours} ${mm}m`;
-  }
-
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flex: 1,
+          height: '100vh',
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <h1 style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>
+          Loading...
+        </h1>
+      </div>
+    );
   }
 
   return (
@@ -481,15 +503,14 @@ const CoursePage = () => {
             </BottomTab>
 
             <div style={{ marginTop: 4, marginLeft: 16 }}>
-              <h3
+              <h4
                 style={{
                   fontFamily: 'OpenSans-Bold',
                   color: '#BDBDBD',
-                  marginTop: 12,
                 }}
               >
                 About this course
-              </h3>
+              </h4>
               <p
                 style={{
                   fontFamily: 'OpenSans-Regular',
@@ -529,7 +550,13 @@ const CoursePage = () => {
             justifyContent: 'space-between',
           }}
         >
-          <OptionButton type="button" onClick={() => setIsModalOpen(true)}>
+          <OptionButton
+            type="button"
+            onClick={() => {
+              setCurrentEditCourse(currentCourse);
+              setIsModalOpen(true);
+            }}
+          >
             <OptionButtonLabel>Edit</OptionButtonLabel>
             <Icon src={editing} />
           </OptionButton>
@@ -702,92 +729,211 @@ const CoursePage = () => {
         ariaHideApp={false}
         onAfterOpen={afterOpenModal}
         onRequestClose={() => setIsModalOpen(false)}
-        contentLabel="Example Modal"
+        contentLabel="modal"
       >
         <div
           style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#0e1315',
             width: '50%',
             padding: 32,
-            borderRadius: 10,
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
             overflow: 'auto',
           }}
         >
-          <button type="button" onClick={() => setIsModalOpen(false)}>
-            close
+          <button
+            style={{
+              color: '#fff',
+              display: 'flex',
+              alignSelf: 'flex-end',
+              fontFamily: 'OpenSans-Bold',
+            }}
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <Icon src={close} />
           </button>
 
-          <p>Course title</p>
+          <h1 style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>Cover</h1>
 
-          <input
-            onChange={(e) =>
-              setCurrentCourse((prevState) => ({
-                ...prevState,
-                courseTitle: e.target.value,
-              }))
-            }
-            style={{ margin: 8 }}
-            value={currentCourse.courseTitle}
-          />
-
-          <p>Course thumbanil</p>
-
-          <img
-            style={{ width: '25%', marginTop: 16 }}
-            src={currentCourse.courseThumbnail}
-            alt="course thumbanil"
-          />
-
-          <AddCourseButton type="button" onClick={onButtonClick}>
+          <button
+            style={{ display: 'flex' }}
+            type="button"
+            onClick={onButtonClick}
+          >
             <input
               style={{ display: 'none' }}
               ref={inputFile}
               onChange={async (e) => handleFileUpload(e)}
               type="file"
             />
+            <img
+              style={{ width: '50%', marginTop: 8, borderRadius: 6 }}
+              src={currentCourse.courseThumbnail}
+              alt="course thumbnail"
+            />
+
+            <Icon
+              style={{
+                position: 'relative',
+                bottom: 0,
+                top: 32,
+                left: -40,
+                right: 0,
+              }}
+              src={editing}
+            />
+          </button>
+
+          {/* <AddCourseButton type="button" onClick={onButtonClick}>
+
             Add
-          </AddCourseButton>
+          </AddCourseButton> */}
 
-          <p style={{ marginTop: 16 }}>Course Modules</p>
+          <h1
+            style={{
+              color: '#fff',
+              fontFamily: 'OpenSans-Bold',
+              marginTop: 32,
+            }}
+          >
+            Title
+          </h1>
 
-          {currentCourse.modules.map((module, index) => {
+          <input
+            onChange={(e) =>
+              setCurrentEditCourse((prevState) => ({
+                ...prevState,
+                courseTitle: e.target.value,
+              }))
+            }
+            style={{
+              borderRadius: 6,
+              marginTop: 8,
+              fontSize: 14,
+              border: 'none',
+              width: '100%',
+              fontFamily: 'OpenSans-Regular',
+              padding: 16,
+              color: '#fff',
+              backgroundColor: '#292F31',
+            }}
+            value={currentEditCourse?.courseTitle}
+          />
+
+          <h1
+            style={{
+              color: '#fff',
+              fontFamily: 'OpenSans-Bold',
+              marginTop: 32,
+            }}
+          >
+            Modules
+          </h1>
+
+          {currentEditCourse?.modules?.map((module, index) => {
             return (
-              <>
+              <div
+                style={{
+                  paddingRight: 16,
+                  marginTop: 16,
+                  paddingBottom: 16,
+                  paddingLeft: 16,
+                  backgroundColor: '#090D0E',
+                  borderRadius: 6,
+                }}
+                key={String(index)}
+              >
+                <h2
+                  style={{
+                    color: '#fff',
+                    fontFamily: 'OpenSans-Bold',
+                    marginTop: 32,
+                  }}
+                >
+                  Title
+                </h2>
                 <input
                   onChange={(e) => handleOnInputModuleNameChange(e, index)}
                   key={String(index)}
-                  style={{ margin: 8 }}
+                  style={{
+                    borderRadius: 6,
+                    marginTop: 8,
+                    fontSize: 14,
+                    border: 'none',
+                    width: '100%',
+                    fontFamily: 'OpenSans-Regular',
+                    padding: 16,
+                    color: '#fff',
+                    backgroundColor: '#292F31',
+                  }}
                   value={module.title}
                 />
-                {currentCourse.modules[index].lessons.map((lesson) => (
+
+                <h2
+                  style={{
+                    color: '#fff',
+                    fontFamily: 'OpenSans-Bold',
+                    marginTop: 32,
+                  }}
+                >
+                  Lessons
+                </h2>
+                {currentEditCourse?.modules[index].lessons.map((lesson) => (
                   <input
                     onChange={(e) =>
                       handleOnInputLessonNameChange(e, lesson.path, index)
                     }
                     key={lesson.path}
-                    style={{ margin: 8 }}
+                    style={{
+                      borderRadius: 6,
+                      marginTop: 8,
+                      fontSize: 14,
+                      border: 'none',
+                      width: '100%',
+                      fontFamily: 'OpenSans-Regular',
+                      padding: 16,
+                      color: '#fff',
+                      backgroundColor: '#292F31',
+                    }}
                     value={lesson.name}
                   />
                 ))}
-              </>
+              </div>
             );
           })}
-
-          <></>
-
-          <button
-            type="button"
-            onClick={async () => {
-              dispatch(updateCourse(currentCourse));
-              setIsModalOpen(false);
-            }}
-          >
-            save
-          </button>
         </div>
+        <button
+          disabled={
+            JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
+          }
+          style={{
+            backgroundColor:
+              JSON.stringify(currentCourse) ===
+              JSON.stringify(currentEditCourse)
+                ? '#171b1c'
+                : '#00C853',
+            width: '50%',
+            height: 50,
+            color:
+              JSON.stringify(currentCourse) ===
+              JSON.stringify(currentEditCourse)
+                ? '#616161'
+                : '#fff',
+            fontSize: 18,
+            fontFamily: 'OpenSans-Bold',
+          }}
+          type="button"
+          onClick={async () => {
+            const courseWithChanges = currentEditCourse;
+            setCurrentCourse(courseWithChanges);
+            dispatch(updateCourse(courseWithChanges));
+            setIsModalOpen(false);
+          }}
+        >
+          Save changes
+        </button>
       </StyledModal>
     </Container>
   );
