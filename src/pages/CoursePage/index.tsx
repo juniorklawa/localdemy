@@ -706,10 +706,9 @@ const CoursePage = () => {
       >
         <div
           style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#12181b',
             width: '50%',
             padding: 32,
-            borderRadius: 10,
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
@@ -729,7 +728,7 @@ const CoursePage = () => {
                 courseTitle: e.target.value,
               }))
             }
-            style={{ margin: 8 }}
+            style={{ margin: 8, backgroundColor: '#ddd' }}
             value={currentCourse.courseTitle}
           />
 
@@ -759,7 +758,7 @@ const CoursePage = () => {
                 <input
                   onChange={(e) => handleOnInputModuleNameChange(e, index)}
                   key={String(index)}
-                  style={{ margin: 8 }}
+                  style={{ margin: 8, backgroundColor: '#12181b' }}
                   value={module.title}
                 />
                 {currentCourse.modules[index].lessons.map((lesson) => (
@@ -768,7 +767,7 @@ const CoursePage = () => {
                       handleOnInputLessonNameChange(e, lesson.path, index)
                     }
                     key={lesson.path}
-                    style={{ margin: 8 }}
+                    style={{ margin: 8, backgroundColor: '#12181b' }}
                     value={lesson.name}
                   />
                 ))}
