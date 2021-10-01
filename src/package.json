@@ -2,7 +2,7 @@
   "name": "localdemy",
   "productName": "Localdemy",
   "description": "Udemy experience, but offline",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "main": "./main.prod.js",
   "author": {
     "name": "Electron React Boilerplate Maintainers",
