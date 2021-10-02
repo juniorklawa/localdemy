@@ -41,9 +41,9 @@
 ### 1.6
 
 - Icon
+- Course onboarding
 ### 1.7
 
 - Access resource (pdf, text, spreadsheet)
 - Manual ordering files
-- Course onboarding
 
