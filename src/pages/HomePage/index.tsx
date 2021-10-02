@@ -11,6 +11,7 @@ import {
 } from '../../store/modules/catalog/actions';
 import { ICourse, IModule, IVideo } from '../../store/modules/catalog/types';
 import white_shrug from '../../white_shrukg.png';
+import not_available from '../../not_available.png';
 import {
   AddCourseButton,
   Container,
@@ -79,26 +80,39 @@ const HomePage: React.FC = () => {
             duration: (await getVideoDuration(file)) as number,
           };
 
-          console.log(formattedFile);
-
           formattedFiles.push(formattedFile);
         }
-        const folderName = path
-          .dirname(formattedFiles[0].path)
-          .split(path.sep)
-          .pop();
-        const courseId = uuidv4();
+
         const validImageTypes = [
           'image/gif',
           'image/jpeg',
           'image/png',
           'image/jpg',
         ];
+
+        const notAvailable = {
+          name: 'not_available',
+          path: './not_available.png',
+          type: 'image/png',
+          duration: null,
+        };
+
         const thumbnailFile = formattedFiles.find(
           (file) =>
             file.name.includes('thumbnail') &&
             validImageTypes.includes(file.type)
         );
+
+        const foldersList = path
+          .dirname(formattedFiles[0].path)
+          .split(path.sep);
+
+        const folderName =
+          foldersList[
+            thumbnailFile ? foldersList.length - 1 : foldersList.length - 2
+          ];
+
+        const courseId = uuidv4();
 
         const sortedFormatedFiles = formattedFiles
           .sort((a, b) => {
@@ -119,6 +133,7 @@ const HomePage: React.FC = () => {
 
           const parentFolderName = allParentsFolders[courseTitleIndex + 1];
 
+          console.log('allParentsFolders', allParentsFolders);
           const moduleExists = courseModules.find(
             (module) => module.title === parentFolderName
           );
@@ -140,9 +155,9 @@ const HomePage: React.FC = () => {
             return naturalSorting(a.title, b.title);
           }),
           courseTitle: folderName as string,
-
+          lastAccessedDate: new Date().getTime(),
           id: courseId,
-          courseThumbnail: thumbnailFile?.path as string,
+          courseThumbnail: thumbnailFile?.path || not_available,
           videoSpeed: 1,
         };
         setIsLoading(false);
@@ -177,13 +192,18 @@ const HomePage: React.FC = () => {
       return JSON.parse(course);
     });
 
-    dispatch(loadStoragedCourses(formattedCourses));
+    const sortedFormattedCourses = formattedCourses.sort(
+      (a, b) => b.lastAccessedDate - a.lastAccessedDate
+    );
+
+    dispatch(loadStoragedCourses(sortedFormattedCourses));
   }, [dispatch]);
 
   const history = useHistory();
 
   useEffect(() => {
     // localStorage.clear();
+
     localStorage.removeItem('loglevel:webpack-dev-server');
     try {
       handleStoragedCourses();
@@ -235,10 +255,7 @@ const HomePage: React.FC = () => {
                   key={course.id}
                   onClick={() => history.push(`/course/${course.id}`)}
                 >
-                  <Thumbnail
-                    src={course.courseThumbnail || `./not_available.png`}
-                    alt="thumbnail"
-                  />
+                  <Thumbnail src={course.courseThumbnail} alt="thumbnail" />
                   <InfoContainer>
                     <CourseTitle> {course.courseTitle}</CourseTitle>
                     <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>

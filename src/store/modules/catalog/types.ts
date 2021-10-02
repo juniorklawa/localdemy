@@ -14,9 +14,10 @@ export interface ICourse {
   modules: IModule[];
   id: string;
   isCompleted?: boolean;
-  courseThumbnail: string;
+  courseThumbnail?: string;
   lastIndex?: number;
   lastModuleIndex?: number;
+  lastAccessedDate: number;
   autoPlayEnabled?: boolean;
   videoSpeed: number;
 }

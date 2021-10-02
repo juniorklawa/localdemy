@@ -13,7 +13,7 @@ const catalog: Reducer<ICatalogState> = (state = INITAL_STATE, action) => {
     switch (action.type) {
       case ActionTypes.addNewCourse: {
         const { course } = action.payload;
-        draft.courses.push(course);
+        draft.courses.unshift(course);
 
         localStorage.setItem(course.id, JSON.stringify(course));
         break;

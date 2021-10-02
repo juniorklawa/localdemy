@@ -26,22 +26,24 @@
 - ~Delete course modal confirmation~
 
 ### 1.4
-
-- Finished Course Modal Logic
-- Finished Course Modal Layout
+- ~Finished Course Modal Logic~
+- ~Finished Course Modal Layout~
+- ~Order by last accessed~
+- ~No picture course~
 
 ### 1.5
 
 - All in english
+- Auto play
+- Scroll to where lastIndex is
 - Refac compoenents and fix ts and eslint errors
 
 ### 1.6
 
-- Archive course
-- Scroll to where lastIndex is
-- Auto play
 - Icon
-- Course onboarding
+### 1.7
+
 - Access resource (pdf, text, spreadsheet)
-- Filter by type (video and pdf)
 - Manual ordering files
+- Course onboarding
+

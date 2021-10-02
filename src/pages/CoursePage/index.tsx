@@ -17,6 +17,7 @@ import {
 import { ICourse } from '../../store/modules/catalog/types';
 import up_chevron from '../../up-chevron.png';
 import close from '../../close.png';
+import confetti from '../../confetti.png';
 import {
   BottomTab,
   ClassContainerButton,
@@ -52,6 +53,7 @@ const CoursePage = () => {
   const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFinishedModalActive, setIsFinishedModalActive] = useState(false);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
@@ -63,8 +65,8 @@ const CoursePage = () => {
     // references are now sync'd and can be accessed.
   }
 
-  const getProgressPercentage = () => {
-    const completedLength = currentCourse.modules.reduce((acc, item) => {
+  const getProgressPercentage = (course: ICourse) => {
+    const completedLength = course.modules.reduce((acc, item) => {
       const completedModuleLength = item.lessons.filter(
         (lesson) => lesson.isCompleted
       ).length;
@@ -72,13 +74,13 @@ const CoursePage = () => {
       return acc + completedModuleLength;
     }, 0);
 
-    const totalLength = currentCourse.modules.reduce((acc, item) => {
+    const totalLength = course.modules.reduce((acc, item) => {
       return acc + item.lessons.length;
     }, 0);
 
     const percentage = Math.floor((completedLength / totalLength) * 100);
 
-    return `${percentage}%`;
+    return percentage;
   };
 
   const selectedCourse = useSelector<IState, ICourse>(
@@ -100,6 +102,12 @@ const CoursePage = () => {
         if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
         }
+        dispatch(
+          updateCourse({
+            ...selectedCourse,
+            lastAccessedDate: new Date().getTime(),
+          })
+        );
 
         setCurrentCourse(selectedCourse);
       } catch (err) {
@@ -181,6 +189,11 @@ const CoursePage = () => {
       lastIndex: currentIndex,
       lastModuleIndex: currentModuleIndex,
     };
+
+    if (getProgressPercentage(updatedCurrentCourse) === 100) {
+      console.log('oi');
+      setIsFinishedModalActive(true);
+    }
 
     setCurrentCourse(updatedCurrentCourse);
     dispatch(updateCourse(updatedCurrentCourse));
@@ -576,7 +589,9 @@ const CoursePage = () => {
           }}
         >
           <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff', margin: 16 }}>
-            {`Course content - ${getProgressPercentage()} completed`}
+            {`Course content - ${getProgressPercentage(
+              currentCourse
+            )}% completed`}
           </p>
         </div>
 
@@ -934,6 +949,82 @@ const CoursePage = () => {
         >
           Save changes
         </button>
+      </StyledModal>
+
+      <StyledModal
+        isOpen={isFinishedModalActive}
+        ariaHideApp={false}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={() => setIsFinishedModalActive(false)}
+        contentLabel="modal"
+      >
+        <div
+          style={{
+            backgroundColor: '#0e1315',
+            width: '35%',
+            padding: 32,
+            display: 'flex',
+            flexDirection: 'column',
+            borderRadius: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'auto',
+          }}
+        >
+          <Icon style={{ height: 256, width: 256 }} src={confetti} />
+          <h1
+            style={{
+              color: '#fff',
+              fontFamily: 'OpenSans-Bold',
+              marginTop: 32,
+            }}
+          >
+            Congratulations!
+          </h1>
+          <p
+            style={{
+              color: '#fff',
+              textAlign: 'center',
+              fontFamily: 'OpenSans-Regular',
+              marginTop: 8,
+            }}
+          >
+            You have just finished the course: {currentCourse.courseTitle}
+          </p>
+          <p
+            style={{
+              color: '#fff',
+              fontFamily: 'OpenSans-Regular',
+              textAlign: 'center',
+            }}
+          >
+            {`with ${currentCourse.modules.reduce((acc, item) => {
+              return acc + item.lessons.length;
+            }, 0)} lessons in total of ${sumDuration()} `}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              setIsFinishedModalActive(false);
+            }}
+            style={{
+              color: '#fff',
+              backgroundColor: '#00C853',
+              borderRadius: 10,
+              marginTop: 32,
+              fontSize: 20,
+              alignSelf: 'center',
+              paddingRight: 16,
+              width: '90%',
+              paddingLeft: 16,
+              height: 50,
+              fontFamily: 'OpenSans-Bold',
+            }}
+          >
+            Nice!
+          </button>
+        </div>
       </StyledModal>
     </Container>
   );
