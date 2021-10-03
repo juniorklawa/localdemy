@@ -444,11 +444,11 @@ const CoursePage = () => {
       <ContentContainer>
         <div
           style={{
-            height: '5.3%',
+            height: 60,
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            // justifyContent: 'center',
+            justifyContent: 'center',
           }}
         >
           <NavigationContainer>
@@ -605,7 +605,7 @@ const CoursePage = () => {
       <div style={{ backgroundColor: '#0E1315', flex: 1 }}>
         <div
           style={{
-            height: '5.3%',
+            height: 60,
             alignSelf: 'center',
             flexDirection: 'row',
             paddingRight: 16,

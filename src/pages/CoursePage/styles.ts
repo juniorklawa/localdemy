@@ -74,6 +74,8 @@ export const NavigationContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-top: 12px;
+
   width: 100%;
   align-items: center;
   margin-left: 8px;
@@ -82,6 +84,7 @@ export const NavigationContainer = styled.div`
 export const OptionButton = styled.button`
   font-family: OpenSans-Regular;
   color: #fff;
+  margin-top: 12px;
   align-items: center;
   justify-content: center;
   display: flex;
