@@ -674,13 +674,13 @@ const CoursePage = () => {
               checked={autoPlayEnabled}
               onColor="#00c853"
               onHandleColor="#fff"
-              handleDiameter={30}
+              handleDiameter={25}
               uncheckedIcon={false}
               checkedIcon={false}
               boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
               activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
               height={20}
-              width={50}
+              width={45}
               className="react-switch"
               id="material-switch"
             />
