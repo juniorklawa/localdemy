@@ -258,7 +258,7 @@ const HomePage: React.FC = () => {
                   <Thumbnail src={course.courseThumbnail} alt="thumbnail" />
                   <InfoContainer>
                     <CourseTitle> {course.courseTitle}</CourseTitle>
-                    <ProgressLabel>{`${percentage}% concluido`}</ProgressLabel>
+                    <ProgressLabel>{`${percentage}% completed`}</ProgressLabel>
                   </InfoContainer>
                 </CourseContainer>
               );

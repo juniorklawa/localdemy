@@ -1,9 +1,11 @@
-import { dialog } from 'electron';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Checkbox from 'react-simple-checkbox';
+import Switch from 'react-switch';
+import close from '../../close.png';
+import confetti from '../../confetti.png';
 import deleteIcon from '../../delete.png';
 import down_chevron from '../../down-chevron.png';
 import editing from '../../editing.png';
@@ -16,8 +18,6 @@ import {
 } from '../../store/modules/catalog/actions';
 import { ICourse } from '../../store/modules/catalog/types';
 import up_chevron from '../../up-chevron.png';
-import close from '../../close.png';
-import confetti from '../../confetti.png';
 import {
   BottomTab,
   ClassContainerButton,
@@ -64,6 +64,8 @@ const CoursePage = () => {
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
   }
+
+  const lessonsScrollViewRef = useRef(null);
 
   const getProgressPercentage = (course: ICourse) => {
     const completedLength = course.modules.reduce((acc, item) => {
@@ -157,6 +159,17 @@ const CoursePage = () => {
     alwaysAstrue = false,
     moduleIndex: number
   ) => {
+    console.log('oioioi');
+
+    if (lessonsScrollViewRef) {
+      lessonsScrollViewRef?.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+    // window.scrollTo(0, lessonsScrollViewRef.current.offsetTop);
+    // scrollToComponent(lessonsScrollViewRef.current);
+
     const updatedCurrentCourseLessons = currentCourse.modules[
       moduleIndex
     ].lessons.map((lesson, index) => {
@@ -202,6 +215,29 @@ const CoursePage = () => {
   const handleGoToNext = () => {
     handleCheckLesson(currentIndex, true, currentModuleIndex);
     handleGoToNextLesson();
+  };
+
+  const getNextScrollPoistion = (
+    currentIndex: number,
+    itemIndex: number,
+    moduleIndex: number
+  ) => {
+    if (
+      currentIndex ===
+        currentCourse.modules[currentModuleIndex].lessons.length - 1 &&
+      currentModuleIndex === currentCourse.modules.length - 1
+    ) {
+      return null;
+    }
+
+    if (
+      currentIndex <
+        currentCourse.modules[currentModuleIndex].lessons.length - 1 &&
+      currentIndex + 1 === itemIndex &&
+      currentModuleIndex === moduleIndex
+    ) {
+      return lessonsScrollViewRef;
+    }
   };
 
   const history = useHistory();
@@ -300,6 +336,18 @@ const CoursePage = () => {
     // setCurrentCourse(updatedCurrentCourse);
   };
 
+  const handleAutoPlay = async (isChecked: boolean) => {
+    setAutoPlayEnabled(isChecked);
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      autoPlayEnabled: isChecked,
+    };
+
+    setCurrentCourse(updatedCurrentCourse);
+    dispatch(updateCourse(updatedCurrentCourse));
+  };
+
   const handleOnInputLessonNameChange = async (
     e: any,
     lessonPath: string,
@@ -396,7 +444,7 @@ const CoursePage = () => {
       <ContentContainer>
         <div
           style={{
-            height: '5%',
+            height: '5.3%',
             width: '100%',
             display: 'flex',
             alignItems: 'center',
@@ -467,9 +515,12 @@ const CoursePage = () => {
               }
               width="100%"
               onPause={(e) => saveLastPosition(e)}
-              onEnded={() =>
-                handleCheckLesson(currentIndex, true, currentModuleIndex)
-              }
+              onEnded={async () => {
+                await handleCheckLesson(currentIndex, true, currentModuleIndex);
+                if (autoPlayEnabled) {
+                  handleGoToNextLesson();
+                }
+              }}
               controls
             >
               <source
@@ -554,7 +605,7 @@ const CoursePage = () => {
       <div style={{ backgroundColor: '#0E1315', flex: 1 }}>
         <div
           style={{
-            height: '5%',
+            height: '5.3%',
             alignSelf: 'center',
             flexDirection: 'row',
             paddingRight: 16,
@@ -582,17 +633,58 @@ const CoursePage = () => {
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             flex: 1,
+            height: 60,
+            alignItems: 'center',
+            justifyContent: 'space-between',
             width: '100%',
             backgroundColor: '#12181b',
           }}
         >
-          <p style={{ fontFamily: 'OpenSans-Bold', color: '#fff', margin: 16 }}>
-            {`Course content - ${getProgressPercentage(
-              currentCourse
-            )}% completed`}
+          <p
+            style={{
+              fontFamily: 'OpenSans-Bold',
+              color: '#fff',
+              marginLeft: 16,
+            }}
+          >
+            {`Content - ${getProgressPercentage(currentCourse)}% completed`}
           </p>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              marginRight: 16,
+              alignItems: 'center',
+              backgroundColor: '#12181b',
+            }}
+          >
+            <p
+              style={{
+                fontFamily: 'OpenSans-Regular',
+                color: '#fff',
+                marginRight: 8,
+              }}
+            >
+              Autoplay
+            </p>
+            <Switch
+              onChange={(isChecked) => handleAutoPlay(isChecked)}
+              checked={autoPlayEnabled}
+              onColor="#00c853"
+              onHandleColor="#fff"
+              handleDiameter={30}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={20}
+              width={50}
+              className="react-switch"
+              id="material-switch"
+            />
+          </div>
         </div>
 
         <ClassesContainer>
@@ -673,6 +765,11 @@ const CoursePage = () => {
                           currentIndex === i &&
                           currentModuleIndex === moduleIndex
                         }
+                        ref={getNextScrollPoistion(
+                          currentIndex,
+                          i,
+                          moduleIndex
+                        )}
                         type="button"
                         onClick={() => {
                           setCurrentIndex(i);

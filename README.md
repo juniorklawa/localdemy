@@ -33,9 +33,9 @@
 
 ### 1.5
 
-- All in english
-- Auto play
-- Scroll to where lastIndex is
+- ~All in english~
+- ~Scroll to where lastIndex is~
+- ~Auto play~
 - Refac compoenents and fix ts and eslint errors
 
 ### 1.6
