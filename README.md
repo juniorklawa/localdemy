@@ -26,6 +26,7 @@
 - ~Delete course modal confirmation~
 
 ### 1.4
+
 - ~Finished Course Modal Logic~
 - ~Finished Course Modal Layout~
 - ~Order by last accessed~
@@ -40,10 +41,10 @@
 
 ### 1.6
 
-- Icon
+- ~Icon~
 - Course onboarding
+
 ### 1.7
 
 - Access resource (pdf, text, spreadsheet)
 - Manual ordering files
-
