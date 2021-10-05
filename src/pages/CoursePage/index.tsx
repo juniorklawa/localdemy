@@ -1,23 +1,25 @@
-import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import Checkbox from 'react-simple-checkbox';
 import Switch from 'react-switch';
-import close from '../../close.png';
-import confetti from '../../confetti.png';
-import deleteIcon from '../../delete.png';
-import down_chevron from '../../down-chevron.png';
-import editing from '../../editing.png';
-import left_chevron from '../../left-chevron.png';
-import play_button from '../../play-button.png';
+import deleteIcon from '../../assets/delete.png';
+import down_chevron from '../../assets/down-chevron.png';
+import editing from '../../assets/editing.png';
+import left_chevron from '../../assets/left-chevron.png';
+import play_button from '../../assets/play-button.png';
+import up_chevron from '../../assets/up-chevron.png';
+import EditCourseModal from '../../components/EditCourseModal';
+import FinishedCourseModal from '../../components/FinishedCourseModal';
 import { IState } from '../../store';
 import {
   deleteCourse,
   updateCourse,
 } from '../../store/modules/catalog/actions';
 import { ICourse } from '../../store/modules/catalog/types';
-import up_chevron from '../../up-chevron.png';
+import getProgressPercentage from '../../utils/getProgressPercentage';
+import secondsToHms from '../../utils/secondsToHms';
+import sumDuration from '../../utils/sumDuration';
 import {
   BottomTab,
   ClassContainerButton,
@@ -34,7 +36,6 @@ import {
   OptionButton,
   OptionButtonLabel,
   PlayIcon,
-  StyledModal,
   ToggleIcon,
   VideoButtonSpeed,
   VideoContainer,
@@ -50,7 +51,6 @@ const CoursePage = () => {
     {} as ICourse
   );
   const { id } = useParams<IRouteParams>();
-  const inputFile = useRef<HTMLInputElement>({} as HTMLInputElement);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishedModalActive, setIsFinishedModalActive] = useState(false);
@@ -61,29 +61,7 @@ const CoursePage = () => {
   const [modalIsOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef();
 
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-  }
-
   const lessonsScrollViewRef = useRef(null);
-
-  const getProgressPercentage = (course: ICourse) => {
-    const completedLength = course.modules.reduce((acc, item) => {
-      const completedModuleLength = item.lessons.filter(
-        (lesson) => lesson.isCompleted
-      ).length;
-
-      return acc + completedModuleLength;
-    }, 0);
-
-    const totalLength = course.modules.reduce((acc, item) => {
-      return acc + item.lessons.length;
-    }, 0);
-
-    const percentage = Math.floor((completedLength / totalLength) * 100);
-
-    return percentage;
-  };
 
   const selectedCourse = useSelector<IState, ICourse>(
     (state) =>
@@ -159,16 +137,12 @@ const CoursePage = () => {
     alwaysAstrue = false,
     moduleIndex: number
   ) => {
-    console.log('oioioi');
-
     if (lessonsScrollViewRef) {
       lessonsScrollViewRef?.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-    // window.scrollTo(0, lessonsScrollViewRef.current.offsetTop);
-    // scrollToComponent(lessonsScrollViewRef.current);
 
     const updatedCurrentCourseLessons = currentCourse.modules[
       moduleIndex
@@ -204,7 +178,6 @@ const CoursePage = () => {
     };
 
     if (getProgressPercentage(updatedCurrentCourse) === 100) {
-      console.log('oi');
       setIsFinishedModalActive(true);
     }
 
@@ -249,34 +222,6 @@ const CoursePage = () => {
     }
   };
 
-  const secondsToHms = (seconds: number) => {
-    const duration = moment.duration(seconds / 60, 'minutes');
-
-    const hh =
-      duration.years() * (365 * 24) +
-      duration.months() * (30 * 24) +
-      duration.days() * 24 +
-      duration.hours();
-
-    const mm = duration.minutes();
-
-    const hours = hh > 0 ? `${hh}h` : ``;
-
-    return `${hours} ${mm}m`;
-  };
-
-  const sumDuration = () => {
-    let seconds = 0;
-
-    currentCourse.modules.forEach((module) => {
-      module.lessons.forEach((lesson) => {
-        seconds += Math.floor(lesson.duration as number);
-      });
-    });
-
-    return secondsToHms(seconds);
-  };
-
   const saveLastPosition = async (e: any) => {
     const updatedCurrentCourseLessons = currentCourse.modules[
       currentModuleIndex
@@ -311,31 +256,6 @@ const CoursePage = () => {
     dispatch(updateCourse(updatedCurrentCourse));
   };
 
-  const handleOnInputModuleNameChange = async (e: any, moduleIndex: number) => {
-    const updatedCurrentCourseModule = currentEditCourse.modules.map(
-      (item, index) => {
-        if (index === moduleIndex) {
-          return {
-            ...item,
-            title: e.target.value,
-          };
-        }
-
-        return item;
-      }
-    );
-
-    const updatedCurrentCourse: ICourse = {
-      ...currentEditCourse,
-      modules: updatedCurrentCourseModule,
-      lastIndex: currentIndex,
-      lastModuleIndex: currentModuleIndex,
-    };
-
-    setCurrentEditCourse(updatedCurrentCourse);
-    // setCurrentCourse(updatedCurrentCourse);
-  };
-
   const handleAutoPlay = async (isChecked: boolean) => {
     setAutoPlayEnabled(isChecked);
 
@@ -346,58 +266,6 @@ const CoursePage = () => {
 
     setCurrentCourse(updatedCurrentCourse);
     dispatch(updateCourse(updatedCurrentCourse));
-  };
-
-  const handleOnInputLessonNameChange = async (
-    e: any,
-    lessonPath: string,
-    moduleIndex: number
-  ) => {
-    const updatedCurrentCourseLessons = currentEditCourse.modules[
-      moduleIndex
-    ].lessons.map((lesson) => {
-      if (lesson.path === lessonPath) {
-        return {
-          ...lesson,
-          name: e.target.value,
-        };
-      }
-
-      return lesson;
-    });
-
-    const updatedModules = currentEditCourse.modules.map((module, index) => {
-      if (index === moduleIndex) {
-        return {
-          ...module,
-          lessons: updatedCurrentCourseLessons,
-        };
-      }
-
-      return module;
-    });
-
-    const updatedCurrentCourse: ICourse = {
-      ...currentEditCourse,
-      modules: updatedModules,
-      lastIndex: currentIndex,
-      lastModuleIndex: currentModuleIndex,
-    };
-    setCurrentEditCourse(updatedCurrentCourse);
-    // setCurrentCourse(updatedCurrentCourse);
-  };
-
-  const onButtonClick = () => {
-    inputFile.current.click();
-  };
-
-  const handleFileUpload = async (event: any) => {
-    const updatedCurrentCourse: ICourse = {
-      ...currentCourse,
-      courseThumbnail: event.target.files[0].path,
-    };
-
-    setCurrentCourse(updatedCurrentCourse);
   };
 
   const handleToggle = (moduleIndex: number) => {
@@ -596,7 +464,7 @@ const CoursePage = () => {
                   fontSize: 12,
                 }}
               >
-                {`Duration: ${sumDuration()}`}
+                {`Duration: ${sumDuration(currentCourse)}`}
               </p>
             </div>
           </div>
@@ -836,293 +704,22 @@ const CoursePage = () => {
         </ClassesContainer>
       </div>
 
-      <StyledModal
-        isOpen={modalIsOpen}
-        ariaHideApp={false}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={() => setIsModalOpen(false)}
-        contentLabel="modal"
-      >
-        <div
-          style={{
-            backgroundColor: '#0e1315',
-            width: '50%',
-            padding: 32,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <button
-            style={{
-              color: '#fff',
-              display: 'flex',
-              alignSelf: 'flex-end',
-              fontFamily: 'OpenSans-Bold',
-            }}
-            type="button"
-            onClick={() => setIsModalOpen(false)}
-          >
-            <Icon src={close} />
-          </button>
+      <EditCourseModal
+        currentCourse={currentCourse}
+        currentEditCourse={currentEditCourse}
+        currentIndex={currentIndex}
+        currentModuleIndex={currentModuleIndex}
+        isModalOpen={modalIsOpen}
+        setCurrentCourse={setCurrentCourse}
+        setCurrentEditCourse={setCurrentEditCourse}
+        setIsModalOpen={setIsModalOpen}
+      />
 
-          <h1 style={{ color: '#fff', fontFamily: 'OpenSans-Bold' }}>Cover</h1>
-
-          <button
-            style={{ display: 'flex' }}
-            type="button"
-            onClick={onButtonClick}
-          >
-            <input
-              style={{ display: 'none' }}
-              ref={inputFile}
-              onChange={async (e) => handleFileUpload(e)}
-              type="file"
-            />
-            <img
-              style={{ width: '50%', marginTop: 8, borderRadius: 6 }}
-              src={currentCourse.courseThumbnail}
-              alt="course thumbnail"
-            />
-
-            <Icon
-              style={{
-                position: 'relative',
-                bottom: 0,
-                top: 32,
-                left: -40,
-                right: 0,
-              }}
-              src={editing}
-            />
-          </button>
-
-          {/* <AddCourseButton type="button" onClick={onButtonClick}>
-
-            Add
-          </AddCourseButton> */}
-
-          <h1
-            style={{
-              color: '#fff',
-              fontFamily: 'OpenSans-Bold',
-              marginTop: 32,
-            }}
-          >
-            Title
-          </h1>
-
-          <input
-            onChange={(e) =>
-              setCurrentEditCourse((prevState) => ({
-                ...prevState,
-                courseTitle: e.target.value,
-              }))
-            }
-            style={{
-              borderRadius: 6,
-              marginTop: 8,
-              fontSize: 14,
-              border: 'none',
-              width: '100%',
-              fontFamily: 'OpenSans-Regular',
-              padding: 16,
-              color: '#fff',
-              backgroundColor: '#292F31',
-            }}
-            value={currentEditCourse?.courseTitle}
-          />
-
-          <h1
-            style={{
-              color: '#fff',
-              fontFamily: 'OpenSans-Bold',
-              marginTop: 32,
-            }}
-          >
-            Modules
-          </h1>
-
-          {currentEditCourse?.modules?.map((module, index) => {
-            return (
-              <div
-                style={{
-                  paddingRight: 16,
-                  marginTop: 16,
-                  paddingBottom: 16,
-                  paddingLeft: 16,
-                  backgroundColor: '#090D0E',
-                  borderRadius: 6,
-                }}
-                key={String(index)}
-              >
-                <h2
-                  style={{
-                    color: '#fff',
-                    fontFamily: 'OpenSans-Bold',
-                    marginTop: 32,
-                  }}
-                >
-                  Title
-                </h2>
-                <input
-                  onChange={(e) => handleOnInputModuleNameChange(e, index)}
-                  key={String(index)}
-                  style={{
-                    borderRadius: 6,
-                    marginTop: 8,
-                    fontSize: 14,
-                    border: 'none',
-                    width: '100%',
-                    fontFamily: 'OpenSans-Regular',
-                    padding: 16,
-                    color: '#fff',
-                    backgroundColor: '#292F31',
-                  }}
-                  value={module.title}
-                />
-
-                <h2
-                  style={{
-                    color: '#fff',
-                    fontFamily: 'OpenSans-Bold',
-                    marginTop: 32,
-                  }}
-                >
-                  Lessons
-                </h2>
-                {currentEditCourse?.modules[index].lessons.map((lesson) => (
-                  <input
-                    onChange={(e) =>
-                      handleOnInputLessonNameChange(e, lesson.path, index)
-                    }
-                    key={lesson.path}
-                    style={{
-                      borderRadius: 6,
-                      marginTop: 8,
-                      fontSize: 14,
-                      border: 'none',
-                      width: '100%',
-                      fontFamily: 'OpenSans-Regular',
-                      padding: 16,
-                      color: '#fff',
-                      backgroundColor: '#292F31',
-                    }}
-                    value={lesson.name}
-                  />
-                ))}
-              </div>
-            );
-          })}
-        </div>
-        <button
-          disabled={
-            JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
-          }
-          style={{
-            backgroundColor:
-              JSON.stringify(currentCourse) ===
-              JSON.stringify(currentEditCourse)
-                ? '#171b1c'
-                : '#00C853',
-            width: '50%',
-            height: 50,
-            color:
-              JSON.stringify(currentCourse) ===
-              JSON.stringify(currentEditCourse)
-                ? '#616161'
-                : '#fff',
-            fontSize: 18,
-            fontFamily: 'OpenSans-Bold',
-          }}
-          type="button"
-          onClick={async () => {
-            const courseWithChanges = currentEditCourse;
-            setCurrentCourse(courseWithChanges);
-            dispatch(updateCourse(courseWithChanges));
-            setIsModalOpen(false);
-          }}
-        >
-          Save changes
-        </button>
-      </StyledModal>
-
-      <StyledModal
-        isOpen={isFinishedModalActive}
-        ariaHideApp={false}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={() => setIsFinishedModalActive(false)}
-        contentLabel="modal"
-      >
-        <div
-          style={{
-            backgroundColor: '#0e1315',
-            width: '35%',
-            padding: 32,
-            display: 'flex',
-            flexDirection: 'column',
-            borderRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            overflow: 'auto',
-          }}
-        >
-          <Icon style={{ height: 256, width: 256 }} src={confetti} />
-          <h1
-            style={{
-              color: '#fff',
-              fontFamily: 'OpenSans-Bold',
-              marginTop: 32,
-            }}
-          >
-            Congratulations!
-          </h1>
-          <p
-            style={{
-              color: '#fff',
-              textAlign: 'center',
-              fontFamily: 'OpenSans-Regular',
-              marginTop: 8,
-            }}
-          >
-            You have just finished the course: {currentCourse.courseTitle}
-          </p>
-          <p
-            style={{
-              color: '#fff',
-              fontFamily: 'OpenSans-Regular',
-              textAlign: 'center',
-            }}
-          >
-            {`with ${currentCourse.modules.reduce((acc, item) => {
-              return acc + item.lessons.length;
-            }, 0)} lessons in total of ${sumDuration()} `}
-          </p>
-
-          <button
-            type="button"
-            onClick={() => {
-              setIsFinishedModalActive(false);
-            }}
-            style={{
-              color: '#fff',
-              backgroundColor: '#00C853',
-              borderRadius: 10,
-              marginTop: 32,
-              fontSize: 20,
-              alignSelf: 'center',
-              paddingRight: 16,
-              width: '90%',
-              paddingLeft: 16,
-              height: 50,
-              fontFamily: 'OpenSans-Bold',
-            }}
-          >
-            Nice!
-          </button>
-        </div>
-      </StyledModal>
+      <FinishedCourseModal
+        currentCourse={currentCourse}
+        setIsFinishedModalActive={setIsFinishedModalActive}
+        isFinishedModalActive={isFinishedModalActive}
+      />
     </Container>
   );
 };

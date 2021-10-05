@@ -7,6 +7,13 @@ module.exports = {
     'jsx-a11y/media-has-caption': 'off',
     'import/prefer-default-export': 'off',
     'react/no-unescaped-entities': 'off',
+    'consistent-return': 'off',
+    'no-restricted-syntax': 'off',
+    'react/prop-types': 'off',
+    'no-console': [
+      'warn',
+      { allow: ['clear', 'info', 'error', 'dir', 'trace'] },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2020,
