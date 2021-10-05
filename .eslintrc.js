@@ -10,6 +10,8 @@ module.exports = {
     'consistent-return': 'off',
     'no-restricted-syntax': 'off',
     'react/prop-types': 'off',
+    'no-alert': 'off',
+    'no-restricted-globals': 'off',
     'no-console': [
       'warn',
       { allow: ['clear', 'info', 'error', 'dir', 'trace'] },
