@@ -37,11 +37,11 @@
 - ~All in english~
 - ~Scroll to where lastIndex is~
 - ~Auto play~
-- Refac compoenents and fix ts and eslint errors
+- ~Refac compoenents and fix ts and eslint errors~
+- ~Icon~
 
 ### 1.6
 
-- ~Icon~
 - Course onboarding
 
 ### 1.7
