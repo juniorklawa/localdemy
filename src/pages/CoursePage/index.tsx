@@ -51,6 +51,7 @@ const CoursePage = () => {
   );
   const { id } = useParams<IRouteParams>();
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [volume, setVolume] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinishedModalActive, setIsFinishedModalActive] = useState(false);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
@@ -77,6 +78,7 @@ const CoursePage = () => {
         setCurrentIndex(selectedCourse.lastIndex || 0);
         setCurrentModuleIndex(selectedCourse.lastModuleIndex || 0);
         setPlaybackRate(selectedCourse.videoSpeed || 1);
+        setVolume(selectedCourse.videoVolume || 1);
 
         if (selectedCourse.autoPlayEnabled) {
           setAutoPlayEnabled(true);
@@ -97,6 +99,13 @@ const CoursePage = () => {
     }
 
     fetchData();
+
+    setTimeout(() => {
+      lessonsScrollViewRef?.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -202,6 +211,16 @@ const CoursePage = () => {
       dispatch(deleteCourse(currentCourse));
       history.push('/');
     }
+  };
+
+  const saveVolume = (currentVolume: number) => {
+    setVolume(currentVolume);
+
+    const updatedCurrentCourse: ICourse = {
+      ...currentCourse,
+      videoVolume: currentVolume,
+    };
+    dispatch(updateCourse(updatedCurrentCourse));
   };
 
   const saveLastPosition = async (
@@ -337,6 +356,8 @@ const CoursePage = () => {
         <VideoContainer>
           <VideoWrapper>
             <VideoPlayer
+              saveVolume={saveVolume}
+              volume={volume}
               currentCourse={currentCourse}
               currentIndex={currentIndex}
               currentModuleIndex={currentModuleIndex}

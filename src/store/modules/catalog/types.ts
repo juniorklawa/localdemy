@@ -20,6 +20,7 @@ export interface ICourse {
   lastAccessedDate: number;
   autoPlayEnabled?: boolean;
   videoSpeed: number;
+  videoVolume: number;
 }
 
 export interface IVideo {
