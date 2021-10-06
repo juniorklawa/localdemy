@@ -1,13 +1,13 @@
 {
   "name": "localdemy",
   "productName": "Localdemy",
-  "description": "Udemy experience, but offline",
-  "version": "1.5.0",
+  "description": "Your course experience, but offline",
+  "version": "1.5.1",
   "main": "./main.prod.js",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://github.com/electron-react-boilerplate"
+    "name": "Everaldo Junior",
+    "email": "juniorklawa10@gmail.com",
+    "url": "https://github.com/juniorklawa/localdemy"
   },
   "scripts": {
     "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",

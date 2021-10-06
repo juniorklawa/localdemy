@@ -86,6 +86,7 @@ const formatCourse = async (files: IVideo[]) => {
       id: courseId,
       courseThumbnail: thumbnailFile?.path || not_available,
       videoSpeed: 1,
+      videoVolume: 1,
     };
     return updatedLoadedCourse;
   }

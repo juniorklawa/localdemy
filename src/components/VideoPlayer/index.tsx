@@ -10,6 +10,8 @@ interface VideoPlayerProps {
   currentIndex: number;
   onEnded: () => void;
   saveLastPosition: (e: React.SyntheticEvent<HTMLVideoElement, Event>) => void;
+  saveVolume: (currentVolume: number) => void;
+  volume: number;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -20,6 +22,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   currentModuleIndex,
   currentIndex,
   saveLastPosition,
+  saveVolume,
+  volume,
   onEnded,
 }) => {
   const getLessonSource = () => {
@@ -33,12 +37,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const handleOnLoadedData = () => {
     videoRef.current.playbackRate = playbackRate;
+    videoRef.current.volume = volume;
   };
 
   return (
     <video
       ref={videoRef}
       onLoadedData={handleOnLoadedData}
+      onVolumeChange={() => {
+        saveVolume(videoRef.current.volume);
+      }}
       autoPlay={autoPlayEnabled}
       key={currentCourse.modules[currentModuleIndex].lessons[currentIndex].path}
       width="100%"
