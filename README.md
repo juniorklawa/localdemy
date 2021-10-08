@@ -25,14 +25,14 @@
 - ~Course and Edit Layout~
 - ~Delete course modal confirmation~
 
-### 1.4
+### ~1.4~
 
 - ~Finished Course Modal Logic~
 - ~Finished Course Modal Layout~
 - ~Order by last accessed~
 - ~No picture course~
 
-### 1.5
+### ~1.5~
 
 - ~All in english~
 - ~Scroll to where lastIndex is~
@@ -40,7 +40,7 @@
 - ~Refac compoenents and fix ts and eslint errors~
 - ~Icon~
 
-### 1.6
+### ~1.6~
 
 - ~Save video volume level~
 - ~Course onboarding~
