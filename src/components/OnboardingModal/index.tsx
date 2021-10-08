@@ -42,7 +42,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         <Step>
           3. If you want it to have a cover, you must pre-add the course cover
           image with the name "thumbnail" inside the course folder, or add a
-          cover in the edit screen).
+          cover in the edit screen.
         </Step>
 
         <Step>4. Click in OK.</Step>
