@@ -57,7 +57,10 @@ export const FinishAndGoToNextButton = styled.button`
 `;
 
 export const VideoWrapper = styled.div`
-  min-height: 820px;
+  width: 100%;
+  display: flex;
+  flex: 1;
+  height: 820px;
 `;
 
 export const SpeedControlContainer = styled.div`
