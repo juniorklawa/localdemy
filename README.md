@@ -43,7 +43,7 @@
 ### 1.6
 
 - ~Save video volume level~
-- Course onboarding
+- ~Course onboarding~
 
 ### 1.7
 
