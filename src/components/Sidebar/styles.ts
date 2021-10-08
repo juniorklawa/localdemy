@@ -159,7 +159,7 @@ export const ClassesContainer = styled.div`
   flex-direction: column;
   background-color: #0e1315;
   width: 100%;
-  height: 90vh;
+  height: 88.5vh;
   align-items: center;
   overflow: auto;
 `;
