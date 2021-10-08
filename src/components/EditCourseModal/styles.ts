@@ -86,13 +86,36 @@ export const BottomButton = styled.button<BottomTabButtonProps>`
 `;
 
 export const ModuleInput = styled.input`
-  border-radius: 6px;
-  margin-top: 8px;
+  /* margin-top: 8px; */
   font-size: 14px;
   border: none;
   width: 100%;
-  font-family: OpenSans-Regular;
-  padding: 16px;
+  /* font-family: OpenSans-Regular; */
+  /* padding: 16px; */
+  color: #fff;
+  background-color: #292f31;
+`;
+
+export const DragBox = styled.div`
+  color: white;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const InputWrapper = styled.div`
+  border-radius: 6px;
+  flex-direction: row;
+  display: flex;
+  flex: 1;
+  margin-top: 8px;
+  width: 100%;
+  padding: 12px;
   color: #fff;
   background-color: #292f31;
 `;

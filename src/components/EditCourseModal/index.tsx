@@ -1,17 +1,27 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from 'react';
+import {
+  DragDropContext,
+  Draggable,
+  DragUpdate,
+  Droppable,
+} from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import close from '../../assets/close.png';
 import editing from '../../assets/editing.png';
+import menu from '../../assets/menu.png';
 import { updateCourse } from '../../store/modules/catalog/actions';
-import { ICourse } from '../../store/modules/catalog/types';
+import { ICourse, IVideo } from '../../store/modules/catalog/types';
 import {
   BottomButton,
   CloseButton,
   Container,
   CourseTitle,
   CourseTitleInput,
+  DragBox,
   EditIcon,
   Icon,
+  InputWrapper,
   ModuleCard,
   ModuleInput,
   ModuleTitle,
@@ -111,6 +121,53 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
     setIsModalOpen(false);
   };
 
+  const swapItems = (
+    lessons: IVideo[],
+    source: number,
+    destination: number
+  ) => {
+    const updatedLessons = [...lessons];
+
+    const temp = lessons[source];
+    updatedLessons[source] = updatedLessons[destination];
+    updatedLessons[destination] = temp;
+
+    return updatedLessons;
+  };
+
+  const handleOnDragEnd = (result: DragUpdate) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const draggedModuleIndex = Number(result.source.droppableId);
+
+    const items = currentEditCourse.modules[draggedModuleIndex].lessons;
+
+    const source = result.source.index;
+    const destination = result.destination.index;
+
+    const formattedLessons = swapItems(items, source, destination);
+
+    const updatedModules = currentEditCourse.modules.map((module, index) => {
+      if (index === draggedModuleIndex) {
+        return {
+          ...module,
+          lessons: formattedLessons,
+        };
+      }
+
+      return module;
+    });
+
+    const updatedCurrentEditCourse: ICourse = {
+      ...currentEditCourse,
+      modules: updatedModules,
+    };
+
+    setCurrentEditCourse(updatedCurrentEditCourse);
+  };
+
   const handleOnInputModuleNameChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     moduleIndex: number
@@ -153,72 +210,118 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
       onRequestClose={() => setIsModalOpen(false)}
       contentLabel="modal"
     >
-      <Container>
-        <CloseButton onClick={() => setIsModalOpen(false)}>
-          <Icon src={close} />
-        </CloseButton>
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Container>
+          <CloseButton onClick={() => setIsModalOpen(false)}>
+            <Icon src={close} />
+          </CloseButton>
 
-        <SectionTitle>Cover</SectionTitle>
+          <SectionTitle>Cover</SectionTitle>
 
-        <ThumbnailButton onClick={onButtonClick}>
-          <UploadImageInput
-            ref={inputFile}
-            onChange={async (e) => handleImageUpload(e)}
-            type="file"
+          <ThumbnailButton onClick={onButtonClick}>
+            <UploadImageInput
+              ref={inputFile}
+              onChange={async (e) => handleImageUpload(e)}
+              type="file"
+            />
+            <Thumbnail
+              src={currentEditCourse.courseThumbnail}
+              alt="course thumbnail"
+            />
+
+            <EditIcon src={editing} />
+          </ThumbnailButton>
+
+          <CourseTitle>Title</CourseTitle>
+
+          <CourseTitleInput
+            onChange={(e) => handleOnTitleInput(e.target.value)}
+            value={currentEditCourse?.courseTitle}
           />
-          <Thumbnail
-            src={currentEditCourse.courseThumbnail}
-            alt="course thumbnail"
-          />
 
-          <EditIcon src={editing} />
-        </ThumbnailButton>
+          <CourseTitle>Modules</CourseTitle>
 
-        <CourseTitle>Title</CourseTitle>
+          {currentEditCourse?.modules?.map((module, index) => {
+            return (
+              <DragDropContext
+                key={String(module.title)}
+                onDragEnd={handleOnDragEnd}
+              >
+                <ModuleCard key={String(index)}>
+                  <ModuleTitle>Title</ModuleTitle>
+                  <CourseTitleInput
+                    onChange={(e) => handleOnInputModuleNameChange(e, index)}
+                    key={String(index)}
+                    value={module.title}
+                  />
 
-        <CourseTitleInput
-          onChange={(e) => handleOnTitleInput(e.target.value)}
-          value={currentEditCourse?.courseTitle}
-        />
+                  <ModuleTitle>Lessons</ModuleTitle>
 
-        <CourseTitle>Modules</CourseTitle>
+                  <Droppable droppableId={String(index)}>
+                    {(provided) => (
+                      <div {...provided.droppableProps} ref={provided.innerRef}>
+                        {currentEditCourse?.modules[index].lessons.map(
+                          (lesson, lessonIndex) => {
+                            return (
+                              <Draggable
+                                key={lesson.path}
+                                draggableId={lesson.path}
+                                index={lessonIndex}
+                              >
+                                {(draggableProvided) => (
+                                  <div
+                                    ref={draggableProvided.innerRef}
+                                    {...draggableProvided.draggableProps}
+                                    {...draggableProvided.dragHandleProps}
+                                  >
+                                    <InputWrapper>
+                                      <ModuleInput
+                                        onChange={(e) =>
+                                          handleOnInputLessonNameChange(
+                                            e,
+                                            lesson.path,
+                                            lessonIndex
+                                          )
+                                        }
+                                        key={lesson.path}
+                                        value={lesson.name}
+                                      />
 
-        {currentEditCourse?.modules?.map((module, index) => {
-          return (
-            <ModuleCard key={String(index)}>
-              <ModuleTitle>Title</ModuleTitle>
-              <ModuleInput
-                onChange={(e) => handleOnInputModuleNameChange(e, index)}
-                key={String(index)}
-                value={module.title}
-              />
-
-              <ModuleTitle>Lessons</ModuleTitle>
-              {currentEditCourse?.modules[index].lessons.map((lesson) => (
-                <ModuleInput
-                  onChange={(e) =>
-                    handleOnInputLessonNameChange(e, lesson.path, index)
-                  }
-                  key={lesson.path}
-                  value={lesson.name}
-                />
-              ))}
-            </ModuleCard>
-          );
-        })}
-      </Container>
-      <BottomButton
-        isEqual={
-          JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
-        }
-        disabled={
-          JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
-        }
-        type="button"
-        onClick={handleOnSaveChangesPress}
-      >
-        Save changes
-      </BottomButton>
+                                      <DragBox>
+                                        <Icon
+                                          style={{ height: 24, width: 24 }}
+                                          src={menu}
+                                        />
+                                      </DragBox>
+                                    </InputWrapper>
+                                  </div>
+                                )}
+                              </Draggable>
+                            );
+                          }
+                        )}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </ModuleCard>
+              </DragDropContext>
+            );
+          })}
+        </Container>
+        <BottomButton
+          isEqual={
+            JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
+          }
+          disabled={
+            JSON.stringify(currentCourse) === JSON.stringify(currentEditCourse)
+          }
+          type="button"
+          onClick={handleOnSaveChangesPress}
+        >
+          Save changes
+        </BottomButton>
+      </DragDropContext>
     </StyledModal>
   );
 };
