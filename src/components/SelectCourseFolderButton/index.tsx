@@ -38,7 +38,7 @@ const SelectCourseFolderButton: React.FC<SelectCourseFolderButtonProps> = ({
         directory=""
         webkitdirectory=""
       />
-      Add
+      New
     </AddCourseButton>
   );
 };

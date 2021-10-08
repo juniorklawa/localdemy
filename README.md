@@ -42,10 +42,10 @@
 
 ### 1.6
 
-- Save video volume level
+- ~Save video volume level~
 - Course onboarding
 
 ### 1.7
 
+- Drag and drop ordering
 - Access resource (pdf, text, spreadsheet)
-- Manual ordering files
