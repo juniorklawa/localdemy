@@ -48,4 +48,4 @@
 ### 1.7
 
 - ~Drag and drop ordering~
-- Access resource (pdf, text, spreadsheet)
+- ~Access resource (pdf, text, spreadsheet)~
