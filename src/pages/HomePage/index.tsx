@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import white_shrug from '../../assets/white_shrukg.png';
 import CourseList from '../../components/CourseList';
+import OnboardingModal from '../../components/OnboardingModal';
 import SelectCourseFolderButton from '../../components/SelectCourseFolderButton';
+import filterStorageKeys from '../../services/filterStorageKeys';
 import { IState } from '../../store';
 import { loadStoragedCourses } from '../../store/modules/catalog/actions';
 import { ICourse } from '../../store/modules/catalog/types';
@@ -31,13 +33,16 @@ const HomePage: React.FC = () => {
 
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [isOnboardingActive, setIsOnboardingActive] = useState(false);
 
   const handleStoragedCourses = useCallback(() => {
     const storagedKeys = Object.keys(localStorage);
-    const formattedCourses: ICourse[] = storagedKeys.map((key) => {
-      const course = localStorage.getItem(key) as string;
-      return JSON.parse(course);
-    });
+    const formattedCourses: ICourse[] = filterStorageKeys(storagedKeys).map(
+      (key) => {
+        const course = localStorage.getItem(key) as string;
+        return JSON.parse(course);
+      }
+    );
 
     const sortedFormattedCourses = formattedCourses.sort(
       (a, b) => b.lastAccessedDate - a.lastAccessedDate
@@ -46,10 +51,17 @@ const HomePage: React.FC = () => {
     dispatch(loadStoragedCourses(sortedFormattedCourses));
   }, [dispatch]);
 
+  const checkOnboarding = () => {
+    const hasOnboarding = localStorage.getItem('@HAS_ONBOARDING');
+    if (!hasOnboarding) {
+      setIsOnboardingActive(true);
+    }
+  };
+
   useEffect(() => {
     // localStorage.clear();
-    localStorage.removeItem('loglevel:webpack-dev-server');
     try {
+      checkOnboarding();
       handleStoragedCourses();
     } catch (err) {
       console.error(err);
@@ -70,7 +82,6 @@ const HomePage: React.FC = () => {
         <Title>My courses</Title>
         <SelectCourseFolderButton setIsLoading={setIsLoading} />
       </Toolbar>
-
       {courses.length > 0 ? (
         <CourseList courses={courses} />
       ) : (
@@ -82,6 +93,11 @@ const HomePage: React.FC = () => {
           </EmptyListLabel>
         </EmptyListContainer>
       )}
+
+      <OnboardingModal
+        setIsActive={setIsOnboardingActive}
+        isActive={isOnboardingActive}
+      />
     </Container>
   );
 };
