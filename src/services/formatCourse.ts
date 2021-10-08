@@ -46,7 +46,11 @@ const formatCourse = async (files: IVideo[]) => {
       .sort((a, b) => {
         return naturalSorting(a.name, b.name);
       })
-      .filter((file) => file.type.includes('video'));
+      .filter((file) =>
+        ['video', 'pdf', 'sheet'].some((fileType) =>
+          file.type.includes(fileType)
+        )
+      );
 
     const courseModules: IModule[] = [];
 

@@ -1,3 +1,4 @@
+import open from 'open';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
@@ -29,6 +30,8 @@ import {
   Icon,
   LessonTitle,
   NavigationContainer,
+  OpenFileContainer,
+  OpenFileLabel,
   SpeedControlContainer,
   TotalClasses,
   VideoButtonSpeed,
@@ -139,6 +142,13 @@ const CoursePage = () => {
 
     setCurrentCourse(updatedCurrentCourse);
     dispatch(updateCourse(updatedCurrentCourse));
+  };
+
+  const handleOnOpenFilePress = () => {
+    const currentLesson =
+      currentCourse.modules[currentModuleIndex].lessons[currentIndex];
+
+    open(currentLesson.path);
   };
 
   const handleCheckLesson = async (
@@ -355,23 +365,48 @@ const CoursePage = () => {
         </ContentToolBar>
         <VideoContainer>
           <VideoWrapper>
-            <VideoPlayer
-              saveVolume={saveVolume}
-              volume={volume}
-              currentCourse={currentCourse}
-              currentIndex={currentIndex}
-              currentModuleIndex={currentModuleIndex}
-              onEnded={async () => {
-                await handleCheckLesson(currentIndex, true, currentModuleIndex);
-                if (autoPlayEnabled) {
-                  handleGoToNextLesson();
-                }
-              }}
-              playbackRate={playbackRate}
-              saveLastPosition={saveLastPosition}
-              videoRef={videoRef}
-              autoPlayEnabled={autoPlayEnabled}
-            />
+            {currentCourse.modules[currentModuleIndex].lessons[
+              currentIndex
+            ].type.includes('video') ? (
+              <>
+                <VideoPlayer
+                  saveVolume={saveVolume}
+                  volume={volume}
+                  currentCourse={currentCourse}
+                  currentIndex={currentIndex}
+                  currentModuleIndex={currentModuleIndex}
+                  onEnded={async () => {
+                    await handleCheckLesson(
+                      currentIndex,
+                      true,
+                      currentModuleIndex
+                    );
+                    if (autoPlayEnabled) {
+                      handleGoToNextLesson();
+                    }
+                  }}
+                  playbackRate={playbackRate}
+                  saveLastPosition={saveLastPosition}
+                  videoRef={videoRef}
+                  autoPlayEnabled={autoPlayEnabled}
+                />
+              </>
+            ) : (
+              <OpenFileContainer>
+                <button type="button" onClick={handleOnOpenFilePress}>
+                  <OpenFileLabel
+                    style={{
+                      marginTop: 32,
+                      fontFamily: 'OpenSans-Bold',
+                      color: '#fff',
+                      padding: 16,
+                    }}
+                  >
+                    Click here to open the file
+                  </OpenFileLabel>
+                </button>
+              </OpenFileContainer>
+            )}
           </VideoWrapper>
 
           <BottomTab>

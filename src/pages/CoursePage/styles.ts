@@ -139,3 +139,15 @@ export const Icon = styled.img`
     transform: scale(1.1);
   }
 `;
+
+export const OpenFileLabel = styled.h2`
+  margin-top: 32px;
+  font-family: OpenSans-Bold;
+  color: #fff;
+  padding: 16px;
+`;
+
+export const OpenFileContainer = styled.div`
+  background-color: #101518;
+  width: 100%;
+`;

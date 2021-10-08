@@ -34,7 +34,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     <CourseContainer
       type="button"
       key={course.id}
-      onClick={() => history.push(`/course/${course.id}`)}
+      onClick={() => {
+        history.push(`/course/${course.id}`);
+      }}
     >
       <Thumbnail src={course.courseThumbnail} alt="thumbnail" />
       <InfoContainer>
