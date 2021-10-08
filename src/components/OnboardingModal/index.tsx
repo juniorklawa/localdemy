@@ -4,10 +4,10 @@ import {
   Container,
   Icon,
   NiceButton,
+  Step,
   StyledModal,
   Subtitle,
   Title,
-  TotalLessons,
 } from './styles';
 
 interface OnboardingModalProps {
@@ -35,21 +35,21 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
         <Icon src={idea} />
         <Title>First time, right?</Title>
         <Subtitle>To add a new course</Subtitle>
-        <TotalLessons>1. Click the "New" button.</TotalLessons>
+        <Step>1. Click the "New" button.</Step>
 
-        <TotalLessons>2. Select your course folder.</TotalLessons>
+        <Step>2. Select your course folder.</Step>
 
-        <TotalLessons>
+        <Step>
           3. If you want it to have a cover, you must pre-add the course cover
           image with the name "thumbnail" inside the course folder, or add a
           cover in the edit screen).
-        </TotalLessons>
+        </Step>
 
-        <TotalLessons>4. Click in OK.</TotalLessons>
+        <Step>4. Click in OK.</Step>
 
-        <TotalLessons>5. Happy learning ;)</TotalLessons>
+        <Step>5. Happy learning ;)</Step>
 
-        <NiceButton onClick={handleOnButtonPress}>Ok!</NiceButton>
+        <NiceButton onClick={handleOnButtonPress}>Nice!</NiceButton>
       </Container>
     </StyledModal>
   );

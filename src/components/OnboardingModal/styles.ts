@@ -53,7 +53,7 @@ export const Description = styled.p`
   margin-top: 8px;
 `;
 
-export const TotalLessons = styled.p`
+export const Step = styled.p`
   margin-top: 8px;
   color: #fff;
   font-family: OpenSans-Regular;
