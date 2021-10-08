@@ -2,7 +2,7 @@
   "name": "localdemy",
   "productName": "Localdemy",
   "description": "Your course experience, but offline",
-  "version": "1.6.1",
+  "version": "1.8.0",
   "main": "./main.prod.js",
   "author": {
     "name": "Everaldo Junior",
