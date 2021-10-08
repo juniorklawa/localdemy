@@ -47,5 +47,5 @@
 
 ### 1.7
 
-- Drag and drop ordering
+- ~Drag and drop ordering~
 - Access resource (pdf, text, spreadsheet)
