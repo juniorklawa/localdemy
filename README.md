@@ -43,9 +43,12 @@
 ### ~1.6~
 
 - ~Save video volume level~
+
+### ~1.7~
+
 - ~Course onboarding~
 
-### 1.7
+### ~1.8~
 
 - ~Drag and drop ordering~
 - ~Access resource (pdf, text, spreadsheet)~
