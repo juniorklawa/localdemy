@@ -10,8 +10,11 @@ const formatCourse = async (files: IVideo[]) => {
     const formattedFiles: IVideo[] = [];
 
     for await (const file of files) {
+      const lessonId = uuidv4();
+
       const fileName = file.path.substring(file.path.lastIndexOf('/') + 1);
       const formattedFile: IVideo = {
+        id: lessonId,
         name: fileName.replace(/\.[^/.]+$/, ''),
         path: file.path,
         type: file.type,
@@ -70,10 +73,13 @@ const formatCourse = async (files: IVideo[]) => {
       );
 
       if (!moduleExists) {
+        const moduleId = uuidv4();
+
         courseModules.push({
           title: parentFolderName,
           lessons: [formattedFile],
           sectionActive: true,
+          id: moduleId,
         });
         return;
       }

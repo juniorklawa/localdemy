@@ -78,13 +78,13 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
 
   const handleOnInputLessonNameChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    lessonPath: string,
+    lessonId: string,
     moduleIndex: number
   ) => {
     const updatedCurrentCourseLessons = currentEditCourse.modules[
       moduleIndex
-    ].lessons.map((lesson) => {
-      if (lesson.path === lessonPath) {
+    ].lessons?.map((lesson) => {
+      if (lesson.id === lessonId) {
         return {
           ...lesson,
           name: e.target.value,
@@ -238,34 +238,40 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
             onChange={(e) => handleOnTitleInput(e.target.value)}
             value={currentEditCourse?.courseTitle}
           />
+          {currentEditCourse?.modules && currentEditCourse?.modules[0]?.title && (
+            <>
+              <CourseTitle>Modules</CourseTitle>
+            </>
+          )}
 
-          <CourseTitle>Modules</CourseTitle>
-
-          {currentEditCourse?.modules?.map((module, index) => {
+          {currentEditCourse?.modules?.map((module, moduleIndex) => {
             return (
-              <DragDropContext
-                key={String(module.title)}
-                onDragEnd={handleOnDragEnd}
-              >
-                <ModuleCard key={String(index)}>
-                  <ModuleTitle>Title</ModuleTitle>
-                  <CourseTitleInput
-                    onChange={(e) => handleOnInputModuleNameChange(e, index)}
-                    key={String(index)}
-                    value={module.title}
-                  />
+              <DragDropContext key={module.id} onDragEnd={handleOnDragEnd}>
+                <ModuleCard key={module.id}>
+                  {currentEditCourse.modules[moduleIndex].title && (
+                    <>
+                      <ModuleTitle>Title</ModuleTitle>
+                      <CourseTitleInput
+                        onChange={(e) =>
+                          handleOnInputModuleNameChange(e, moduleIndex)
+                        }
+                        key={module.id}
+                        value={module.title}
+                      />
+                    </>
+                  )}
 
                   <ModuleTitle>Lessons</ModuleTitle>
 
-                  <Droppable droppableId={String(index)}>
+                  <Droppable droppableId={module.id}>
                     {(provided) => (
                       <div {...provided.droppableProps} ref={provided.innerRef}>
-                        {currentEditCourse?.modules[index].lessons.map(
+                        {currentEditCourse?.modules[moduleIndex]?.lessons.map(
                           (lesson, lessonIndex) => {
                             return (
                               <Draggable
-                                key={lesson.path}
-                                draggableId={lesson.path}
+                                key={lesson.id}
+                                draggableId={lesson.id}
                                 index={lessonIndex}
                               >
                                 {(draggableProvided) => (
@@ -279,11 +285,11 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
                                         onChange={(e) =>
                                           handleOnInputLessonNameChange(
                                             e,
-                                            lesson.path,
-                                            lessonIndex
+                                            lesson.id,
+                                            moduleIndex
                                           )
                                         }
-                                        key={lesson.path}
+                                        key={lesson.id}
                                         value={lesson.name}
                                       />
 

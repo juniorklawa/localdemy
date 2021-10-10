@@ -24,6 +24,7 @@ export interface ICourse {
 }
 
 export interface IVideo {
+  id: string;
   name: string;
   path: string;
   type: string;
@@ -36,4 +37,5 @@ export interface IModule {
   title: string;
   lessons: IVideo[];
   sectionActive: boolean;
+  id: string;
 }
