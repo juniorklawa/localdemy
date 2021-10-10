@@ -5,6 +5,7 @@ import deleteIcon from '../../assets/delete.png';
 import down_chevron from '../../assets/down-chevron.png';
 import editing from '../../assets/editing.png';
 import play_button from '../../assets/play-button.png';
+import file from '../../assets/file.png';
 import up_chevron from '../../assets/up-chevron.png';
 
 import { ICourse, IModule } from '../../store/modules/catalog/types';
@@ -192,11 +193,21 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <ClassSubContainerButton>
                         <LessonName>{item.name}</LessonName>
                         <LessonInfoContainer>
-                          <PlayIcon src={play_button} />
+                          {item.duration ? (
+                            <>
+                              <PlayIcon src={play_button} />
 
-                          <LessonDuration>
-                            {secondsToHms(item.duration)}
-                          </LessonDuration>
+                              <LessonDuration>
+                                {secondsToHms(item.duration)}
+                              </LessonDuration>
+                            </>
+                          ) : (
+                            <>
+                              <PlayIcon src={file} />
+
+                              <LessonDuration>File</LessonDuration>
+                            </>
+                          )}
                         </LessonInfoContainer>
                       </ClassSubContainerButton>
                     </ClassContainerButton>
