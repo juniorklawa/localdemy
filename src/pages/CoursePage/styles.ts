@@ -56,12 +56,7 @@ export const FinishAndGoToNextButton = styled.button`
   font-family: OpenSans-SemiBold;
 `;
 
-export const VideoWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex: 1;
-  height: 820px;
-`;
+export const VideoWrapper = styled.div``;
 
 export const SpeedControlContainer = styled.div`
   flex-direction: row;
@@ -150,4 +145,5 @@ export const OpenFileLabel = styled.h2`
 export const OpenFileContainer = styled.div`
   background-color: #101518;
   width: 100%;
+  height: 800px;
 `;

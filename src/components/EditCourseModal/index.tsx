@@ -140,17 +140,19 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({
       return;
     }
 
-    const draggedModuleIndex = Number(result.source.droppableId);
+    const draggedModuleId = result.source.droppableId;
 
-    const items = currentEditCourse.modules[draggedModuleIndex].lessons;
+    const items = currentEditCourse.modules.find(
+      (module) => module.id === draggedModuleId
+    ).lessons;
 
     const source = result.source.index;
     const destination = result.destination.index;
 
     const formattedLessons = swapItems(items, source, destination);
 
-    const updatedModules = currentEditCourse.modules.map((module, index) => {
-      if (index === draggedModuleIndex) {
+    const updatedModules = currentEditCourse.modules.map((module) => {
+      if (module.id === draggedModuleId) {
         return {
           ...module,
           lessons: formattedLessons,
