@@ -43,8 +43,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-
-Localdemy is a software that enhances the experience of watching courses offline
+Localdemy is a software that enhances the experience of watching courses offline.
 
 ## Features
 
