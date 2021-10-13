@@ -46,6 +46,17 @@
 
 Localdemy is a software that enhances the experience of watching courses offline
 
+## Features
+
+- Saves course progress
+- Change video speed
+- Autoplay
+- Edit course information
+- Natural sorting
+- Separate classes by modules
+- Manual ordering
+- Support to files (pdf, sheets)
+
 
 ### Built With
 
